@@ -50,6 +50,27 @@ typedef struct{
 void creationDossier(dossier* d);
 void initSalle(salle* s);
 void initCommunication(communication* c);
+void afficherMenuPrincipal();
+void afficherMenuInscription();
+void afficherMenuDesinscription();
+
+void affichereMenuPrincipal(){
+    printf("Bienvenue:\nVeuillez entrer le votre choix à l'aide du numéro associé à celui-ci.\n");
+    printf("1. S'inscrire");
+    printf("2. Se désinscrire");
+    printf("3. Quitter\n");
+}
+
+void afficherMenuInscription(){
+    printf("Inscription:\n");
+    printf("Veuillez saisir votre nom puis votre prenom\n");
+}
+
+void afficherMenuDesinscription(){
+    printf("Désinscription:\n");
+    printf("Veuillez saisir le numéro de dossier qui vous a été donné lors de l'inscription.");
+    printf("Ce numéro de dossier est composé de 10 chiffres.\n");
+}
 
 //main program
 int main(int argc, char const *argv[])
@@ -95,8 +116,7 @@ int main(int argc, char const *argv[])
     printf("Connexion en cours\n");
     printf("Pour voir les clients connectés ainsi que leur status, appuyez sur Entrée\n");
 
+    //affichage
     socklen_t tailleCoord = sizeof(coordClient);
     pthread_t threadAffichage;
-    
-
 }
