@@ -18,6 +18,7 @@
 #define true 1 //
 #define false 0 //
 #define MAX_PLACES 100 //nombre maximum de places
+#define null NULL //null
 
 //delcaration des structures
 typedef struct{
@@ -50,11 +51,11 @@ typedef struct{
 void creationDossier(dossier* d);
 void initSalle(salle* s);
 void initCommunication(communication* c);
-void afficherMenuPrincipal();
+void afficherMenuPrincipal(void* arg);
 void afficherMenuInscription();
 void afficherMenuDesinscription();
 
-void affichereMenuPrincipal(){
+void affichereMenuPrincipal(void* arg){
     printf("Bienvenue:\nVeuillez entrer le votre choix à l'aide du numéro associé à celui-ci.\n");
     printf("1. S'inscrire");
     printf("2. Se désinscrire");
@@ -75,48 +76,70 @@ void afficherMenuDesinscription(){
 //main program
 int main(int argc, char const *argv[])
 {
-    //initialisation des variables
+    //déclaration des variables
     int fdSocketAttente;
     int fdSocketCommunication;
     struct sockaddr_in coordServeur;
     struct sockaddr_in coordClient;
     int longueurAdresse;
     int nbRecu;
-    int pid;
+    char tampon[100];
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
     if(fdSocketAttente < 0) {
         printf("Erreur ! Socket incorrecte\n");
         exit(EXIT_FAILURE);
+    } else {
+        //preparation de l'adresse d'attachement locale
+        longueurAdresse = sizeof(struct sockaddr_in);
+        memset(&coordServeur, 0x00, longueurAdresse);
+
+        coordServeur.sin_family = PF_INET;
+        //interfaces locales dispo pour l'adresse
+        coordServeur.sin_addr.s_addr = htonl(INADDR_ANY);
+        //interfaces locales dispo pour le port
+        coordServeur.sin_port = htons(PORT);
+
+        //test du bind avant de continuer
+        if(bind(fdSocketAttente, (struct sockaddr *) &coordServeur, sizeof(coordServeur)) == -1){
+            printf("Erreur ! Bind incorrect\n");
+            exit(EXIT_FAILURE);
+        } else if(listen(fdSocketAttente, 5) == -1){ //test du listen avant de continuer
+            printf("Erreur ! Listen incorrect\n");
+            exit(EXIT_FAILURE);
+        } else {
+            printf("En attente de connexion..\n");
+            printf("Pour voir les clients connectés ainsi que leur status, appuyez sur Entrée\n");
+
+            //affichage
+            socklen_t tailleCoord = sizeof(coordClient);
+            /*
+            pthread_t threadAffichage;
+            pthread_create(&threadAffichage, null, null, null);
+            */
+
+            while(true){
+                //test accept
+                if((fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *) &coordClient, &tailleCoord)) == -1){
+                    printf("Erreur ! Accept incorrect");
+                    exit(EXIT_FAILURE);
+                } else {
+                    printf("Client connecté !");
+                    printf("Adresse: %s:%d", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
+
+                    nbRecu = recv(fdSocketCommunication, tampon, 99, 0);
+                    if(nbRecu > 0){
+                        tampon[nbRecu] = 0;
+                        printf("Reçu: %s\n", tampon);
+                    }
+                    strcpy(tampon, "Message renvoyé par le serveur vers le client !");
+                    send(fdSocketCommunication, tampon, strlen(tampon), 0);
+                    close(fdSocketCommunication);
+                    close(fdSocketAttente);
+                    return 0;
+                }
+            }
+        }
     }
-
-    //preparation de l'adresse d'attachement locale
-    longueurAdresse = sizeof(struct sockaddr_in);
-    memset(&coordServeur, 0x00, longueurAdresse);
-
-    coordServeur.sin_family = PF_INET;
-    //interfaces locales dispo pour l'adresse
-    coordServeur.sin_addr.s_addr = htonl(INADDR_ANY);
-    //interfaces locales dispo pour le port
-    coordServeur.sin_port = htons(PORT);
-
-    //test du bind avant de continuer
-    if(bind(fdSocketAttente, (struct sockaddr *) &coordServeur, sizeof(coordServeur)) == -1){
-        printf("Erreur ! Bind incorrect\n");
-        exit(EXIT_FAILURE);
-    }
-
-    //test du listen avant de continuer
-    if(listen(fdSocketAttente, 5) == -1){
-        printf("Erreur ! Listen incorrect");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Connexion en cours\n");
-    printf("Pour voir les clients connectés ainsi que leur status, appuyez sur Entrée\n");
-
-    //affichage
-    socklen_t tailleCoord = sizeof(coordClient);
-    pthread_t threadAffichage;
 }
