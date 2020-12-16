@@ -91,6 +91,11 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
+    printf("Connexion en cours\n");
+    printf("Pour voir les clients connectés ainsi que leur status, appuyez sur Entrée\n");
+
+    socklen_t tailleCoord = sizeof(coordClient);
+    pthread_t threadAffichage;
     
 
 }
