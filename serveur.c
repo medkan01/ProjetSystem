@@ -132,8 +132,12 @@ int main(int argc, char const *argv[])
                     if(nbRecu > 0){
                         tampon[nbRecu] = 0;
                         printf("Reçu: %s\n", tampon);
+                    } else {
+                        printf("Erreur");
                     }
-                    strcpy(tampon, "Message renvoyé par le serveur vers le client !\n");
+
+                    //Envoie d'un msg au client
+                    strcpy(tampon, "Message bien reçu!\n");
                     send(fdSocketCommunication, tampon, strlen(tampon), 0);
                     close(fdSocketCommunication);
                     close(fdSocketAttente);
