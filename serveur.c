@@ -109,9 +109,6 @@ int main(int argc, char const *argv[])
             printf("Erreur ! Listen incorrect\n");
             exit(EXIT_FAILURE);
         } else {
-            printf("En attente de connexion..\n");
-            printf("Pour voir les clients connectés ainsi que leur status, appuyez sur Entrée\n");
-
             //affichage
             socklen_t tailleCoord = sizeof(coordClient);
             /*
@@ -120,6 +117,8 @@ int main(int argc, char const *argv[])
             */
 
             while(true){
+                printf("En attente de connexion..\n");
+                printf("Pour voir les clients connectés ainsi que leur status, appuyez sur Entrée\n");
                 //test accept
                 if((fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *) &coordClient, &tailleCoord)) == -1){
                     printf("Erreur ! Accept incorrect\n");
@@ -139,11 +138,12 @@ int main(int argc, char const *argv[])
                     //Envoie d'un msg au client
                     strcpy(tampon, "Message bien reçu!\n");
                     send(fdSocketCommunication, tampon, strlen(tampon), 0);
-                    close(fdSocketCommunication);
-                    close(fdSocketAttente);
-                    return 0;
+                    printf("Connexion fermée.");
                 }
             }
+            close(fdSocketCommunication);
+            close(fdSocketAttente);
+            return 0;
         }
     }
 }
