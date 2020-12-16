@@ -24,37 +24,34 @@
 typedef struct{
     int placesOccupees; //nombre de places occupées
     int placesLibres; //nombre de places libres dans la salle
-} salle;
+} Salle;
 
 typedef struct{
     int noDossier; //numéro du dossier
-    char nom[100]; //nom de la personne associée au numéro de dossier
-    char prenom[100]; //prenom de la personne associé au numéro de dossier
-} dossier;
+    char nom[20]; //nom de la personne associée au numéro de dossier
+    char prenom[20]; //prenom de la personne associé au numéro de dossier
+} Dossier;
 
 typedef struct{
-    char adresseClient[100]; //adresse du client
-    int port; //port
-
-    int index; //index du tableau
-    int fdSocketAttente;
-    int fdSocketCommunication;
-} communication;
+    Dossier* dossier;
+    struct listeDossier * dossierSuivant;
+} listeDossiers;
 
 //declaration des fonctions
-struct dossier creationDossier(char nom, char prenom);
-void initSalle(salle* s);
-void initCommunication(communication* c);
+Dossier* creationDossier(char nom[20], char prenom[20]);
+void initSalle(Salle* s);
 void afficherMenuPrincipal();
 void afficherMenuInscription();
 void afficherMenuDesinscription();
+int randint(int bi, int bs);
+int numeroDossier();
 
-void afficherMenuInscription(fdSocketCommunication){
+void afficherMenuInscription(int fdSocketCommunication){
     //declaration des variables de travail
     char text[100];
     int nbRecu;
-    char nom, prenom;
-    dossier d;
+    char nom[20], prenom[20];
+    Dossier* d;
 
     //envoi d'une demande de saisie du nom au client
     strcpy(text, "Inscription:\nVeuillez saisir votre nom:\n");
@@ -66,7 +63,7 @@ void afficherMenuInscription(fdSocketCommunication){
         text[nbRecu] = 0;
         printf("Reçu: %s\n", text);
         //stockage du nom
-        nom = text;
+        *nom = *text;
     } else {
         printf("Erreur");
     }
@@ -79,7 +76,7 @@ void afficherMenuInscription(fdSocketCommunication){
         text[nbRecu] = 0;
         printf("Reçu: %s\n", text);
         //stockage du prenom
-        prenom = text;
+        *prenom = *text;
     } else {
         printf("Erreur");
     }
@@ -102,17 +99,30 @@ void menuPrincipal(){
     printf("3. Quitter\n");
 }
 
-struct dossier creationDossier(char nom, char prenom){
-    dossier d;
-    d.nom = nom;
-    d.prenom = prenom;
-
+Dossier* creationDossier(char nom[20], char prenom[20]){
+    Dossier* d;
+    *d->nom = *nom;
+    *d->prenom = *prenom;
+    d->noDossier = numeroDossier();
 
     return d;
 }
 
-int randint(bi, bs){
-    
+int numeroDossier(){
+    int no;
+    int coef = 1;
+    for(int i = 0; i < 10; i++){
+        int n = randint(0,9);
+        no += n*coef;
+        coef *= 10;
+    }
+    return no;
+}
+
+int randint(int bi, int bs){
+    int n;
+    srand(time(null));
+    n = rand() % bs + bi;
 }
 
 
