@@ -50,14 +50,19 @@ int main(int argc, char const *argv[])
         } else {
             printf("Connexion réussie !\n");
             ////////////////////////////////////////////////////////
-            printf("Veuillez saisir un message:\n");
+            printf("Veuillez saisir votre nom:\n");
+            scanf("%[^\n]", message);
+            send(fdSocket, message, strlen(message), 0);
+            ////////////////////////////////////////////////////////
+            printf("Veuillez saisir votre prenom:\n");
             scanf("%[^\n]", message);
             getchar();
-            ////////////////////////////////////////////////////////
             send(fdSocket, message, strlen(message), 0);
+            send(fdSocket, "saisieFini", strlen(message), 0);
             nbRecu = recv(fdSocket, message, 99, 0);
+            ////////////////////////////////////////////////////////
             if(nbRecu > 0){
-                message[nbRecu] = 0;
+                message[nbRecu] = 0;       
                 printf("Reçu: %s\n", message);
             }
             close(fdSocket);

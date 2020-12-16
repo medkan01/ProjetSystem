@@ -27,18 +27,25 @@ typedef struct{
 } Salle;
 
 typedef struct{
+    int x; //range de la place
+    int y; //colonne de la place
+    boolean libre; //defini si la place est libre ou non
+} Place;
+
+typedef struct{
     int noDossier; //numéro du dossier
     char nom[20]; //nom de la personne associée au numéro de dossier
     char prenom[20]; //prenom de la personne associé au numéro de dossier
 } Dossier;
 
-typedef struct{
-    Dossier dossier;
-    struct CaseDossier * dossierSuivant;
-} CaseDossier;
-typedef CaseDossier * listeDossiers;
+//declaration des tables 
 
-listeDossiers liste; //creation d'une liste des dossiers, et donc du nombre de place dispo.
+//contenant tous les dossiers
+Dossier listeDossiers[MAX_PLACES];
+int nbrDossier = 0;
+
+//contenant toutes les places
+Place listePlaces[MAX_PLACES];
 
 //declaration des fonctions
 Dossier* creationDossier(char nom[20], char prenom[20]);
@@ -48,9 +55,8 @@ void afficherMenuInscription();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
-void ajoutDossierEnTete(listeDossiers liste, Dossier d);
-void rechElement(listeDossiers liste, Dossier d);
-listeDossiers creerCase(Dossier d);
+void ajoutDossierEnTete(Dossier d);
+int rechElement(Dossier d);
 
 void afficherMenuInscription(int fdSocketCommunication){
     //declaration des variables de travail
@@ -100,7 +106,7 @@ void afficherMenuDesinscription(){
 
 //fonction menu principal
 void menuPrincipal(){
-    printf("Bienvenue:\nVeuillez entrer le votre choix à l'aide du numéro associé à celui-ci.\n");
+    printf("Bienvenue:\nVeuillez entrer votre choix à l'aide du numéro associé à celui-ci.\n");
     printf("1. S'inscrire\n");
     printf("2. Se désinscrire\n");
     printf("3. Quitter\n");
@@ -137,21 +143,23 @@ int randint(int bi, int bs){
     return n;
 }
 
-void ajoutDossierEnTete(listeDossiers L, Dossier d){
-    listeDossiers P = creerCase(d);
-    P->dossierSuivant = L;
-    L = P;
+void ajoutDossierListe(Dossier d){
+    if(nbrDossier == MAX_PLACES){
+        printf("La liste est pleine");
+    }else{
+        listeDossiers[nbrDossier] = d;
+        nbrDossier++;
+    }
 }
 
-listeDossiers creerCase(Dossier d){
-    listeDossiers L;
-    L->dossier = d;
-    L->dossierSuivant = null;
-    return L;
-}
-
-void rechElement(listeDossiers liste, Dossier d){
-
+int rechElement(Dossier d){
+    Dossier dossierCourant;
+    for(int j=0;j<=nbrDossier;j++){
+        dossierCourant = listeDossiers[j];
+        if(dossierCourant.noDossier == d.noDossier){
+            return j;
+        }
+    }
 }
 
 //main program
@@ -166,7 +174,8 @@ int main(int argc, char const *argv[])
     int nbRecu;
     char tampon[100];
     Salle* salle;
-    salle->placesLibres = MAX_PLACES - sizeof(*liste);
+    /*int place = sizeof(liste);                    //Fonctionne pas pour le moment 
+    salle->placesLibres =  MAX_PLACES - place;*/
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
@@ -208,7 +217,7 @@ int main(int argc, char const *argv[])
                 } else {
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
-
+                while(tampon != "saisieFini"){
                     nbRecu = recv(fdSocketCommunication, tampon, 99, 0);
                     if(nbRecu > 0){
                         tampon[nbRecu] = 0;
@@ -216,7 +225,7 @@ int main(int argc, char const *argv[])
                     } else {
                         printf("Erreur");
                     }
-
+                }
                     //Envoie d'un msg au client
                     strcpy(tampon, "Message bien reçu!\n");
                     send(fdSocketCommunication, tampon, strlen(tampon), 0);
