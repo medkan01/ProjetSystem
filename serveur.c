@@ -33,11 +33,12 @@ typedef struct{
 } Dossier;
 
 typedef struct{
-    Dossier* dossier;
-    struct listeDossier * dossierSuivant;
-} listeDossiers;
+    Dossier dossier;
+    struct CaseDossier * dossierSuivant;
+} CaseDossier;
+typedef CaseDossier * listeDossiers;
 
-listeDossiers liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
+listeDossiers liste; //creation d'une liste des dossiers, et donc du nombre de place dispo.
 
 //declaration des fonctions
 Dossier* creationDossier(char nom[20], char prenom[20]);
@@ -47,6 +48,9 @@ void afficherMenuInscription();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
+void ajoutDossierEnTete(listeDossiers liste, Dossier d);
+void rechElement(listeDossiers liste, Dossier d);
+listeDossiers creerCase(Dossier d);
 
 void afficherMenuInscription(int fdSocketCommunication){
     //declaration des variables de travail
@@ -84,6 +88,7 @@ void afficherMenuInscription(int fdSocketCommunication){
     }
 
     d = creationDossier(nom, prenom);
+
 }
 
 //fonction menu desinscription
@@ -107,6 +112,7 @@ Dossier* creationDossier(char nom[20], char prenom[20]){
     *d->nom = *nom;
     *d->prenom = *prenom;
     d->noDossier = numeroDossier();
+    
 
     return d;
 }
@@ -129,6 +135,23 @@ int randint(int bi, int bs){
     srand(time(null));
     n = rand() % bs + bi;
     return n;
+}
+
+void ajoutDossierEnTete(listeDossiers L, Dossier d){
+    listeDossiers P = creerCase(d);
+    P->dossierSuivant = L;
+    L = P;
+}
+
+listeDossiers creerCase(Dossier d){
+    listeDossiers L;
+    L->dossier = d;
+    L->dossierSuivant = null;
+    return L;
+}
+
+void rechElement(listeDossiers liste, Dossier d){
+
 }
 
 //main program
