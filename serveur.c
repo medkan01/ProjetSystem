@@ -122,18 +122,18 @@ int main(int argc, char const *argv[])
             while(true){
                 //test accept
                 if((fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *) &coordClient, &tailleCoord)) == -1){
-                    printf("Erreur ! Accept incorrect");
+                    printf("Erreur ! Accept incorrect\n");
                     exit(EXIT_FAILURE);
                 } else {
-                    printf("Client connecté !");
-                    printf("Adresse: %s:%d", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
+                    printf("Client connecté !\n");
+                    printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
 
                     nbRecu = recv(fdSocketCommunication, tampon, 99, 0);
                     if(nbRecu > 0){
                         tampon[nbRecu] = 0;
                         printf("Reçu: %s\n", tampon);
                     }
-                    strcpy(tampon, "Message renvoyé par le serveur vers le client !");
+                    strcpy(tampon, "Message renvoyé par le serveur vers le client !\n");
                     send(fdSocketCommunication, tampon, strlen(tampon), 0);
                     close(fdSocketCommunication);
                     close(fdSocketAttente);

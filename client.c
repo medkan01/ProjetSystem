@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
     //initialisation socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(fdSocket < 0){
-        printf("Erreur ! Socket incorrect");
+        printf("Erreur ! Socket incorrect\n");
         exit(EXIT_FAILURE);
     } else {
         //preparation coordServeur
@@ -45,12 +45,12 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-            strcpy(tampon, "Message du client vers le serveur");
+            strcpy(tampon, "Message du client vers le serveur\n");
             send(fdSocket, tampon, strlen(tampon), 0);
             nbRecu = recv(fdSocket, tampon, 99, 0);
             if(nbRecu > 0){
                 tampon[nbRecu] = 0;
-                printf("Reçu: %s", tampon);
+                printf("Reçu: %s\n", tampon);
             }
             close(fdSocket);
         }
