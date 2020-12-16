@@ -138,7 +138,7 @@ int main(int argc, char const *argv[])
                     //Envoie d'un msg au client
                     strcpy(tampon, "Message bien reçu!\n");
                     send(fdSocketCommunication, tampon, strlen(tampon), 0);
-                    printf("Connexion fermée.");
+                    printf("Connexion fermée..\n\n");
                 }
             }
             close(fdSocketCommunication);
