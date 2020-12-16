@@ -34,8 +34,8 @@ typedef struct{
 
 typedef struct{
     int noDossier; //numéro du dossier
-    char nom[20]; //nom de la personne associée au numéro de dossier
-    char prenom[20]; //prenom de la personne associé au numéro de dossier
+    char nom; //nom de la personne associée au numéro de dossier
+    char prenom; //prenom de la personne associé au numéro de dossier
 } Dossier;
 
 //declaration des tables 
@@ -48,14 +48,13 @@ int nbrDossier = 0;
 Place listePlaces[MAX_PLACES];
 
 //declaration des fonctions
-Dossier* creationDossier(char nom[20], char prenom[20]);
+void creationDossier(char nom, char prenom);
 void initSalle(Salle* s);
 void afficherMenuPrincipal();
 void afficherMenuInscription();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
-void ajoutDossierEnTete(Dossier d);
 int rechElement(Dossier d);
 
 void afficherMenuInscription(int fdSocketCommunication){
@@ -63,7 +62,6 @@ void afficherMenuInscription(int fdSocketCommunication){
     char text[100];
     int nbRecu;
     char nom[20], prenom[20];
-    Dossier* d;
 
     //envoi d'une demande de saisie du nom au client
     strcpy(text, "Inscription:\nVeuillez saisir votre nom:\n");
@@ -93,8 +91,6 @@ void afficherMenuInscription(int fdSocketCommunication){
         printf("Erreur");
     }
 
-    d = creationDossier(nom, prenom);
-
 }
 
 //fonction menu desinscription
@@ -113,14 +109,11 @@ void menuPrincipal(){
 }
 
 //fonction de creation de dossier
-Dossier* creationDossier(char nom[20], char prenom[20]){
-    Dossier* d;
-    *d->nom = *nom;
-    *d->prenom = *prenom;
-    d->noDossier = numeroDossier();
-    
-
-    return d;
+void creationDossier(char nom, char prenom){
+    Dossier d;
+    d.nom = nom;
+    d.prenom = prenom;
+    d.noDossier = numeroDossier();
 }
 
 //generation d'un numero de dossier
@@ -173,9 +166,11 @@ int main(int argc, char const *argv[])
     int longueurAdresse;
     int nbRecu;
     char tampon[100];
-    Salle* salle;
-    /*int place = sizeof(liste);                    //Fonctionne pas pour le moment 
-    salle->placesLibres =  MAX_PLACES - place;*/
+    char nom = null;
+    char prenom = null;
+    Salle salle;
+    int place = sizeof(listePlaces);                   
+    salle.placesLibres =  MAX_PLACES - place;
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
@@ -217,15 +212,18 @@ int main(int argc, char const *argv[])
                 } else {
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
-                while(tampon != "saisieFini"){
+                while(true){    //A changer
                     nbRecu = recv(fdSocketCommunication, tampon, 99, 0);
-                    if(nbRecu > 0){
-                        tampon[nbRecu] = 0;
+                    if(nbRecu != 0){
+                        tampon[nbRecu]=0;
                         printf("Reçu: %s\n", tampon);
+                        nom = tampon;
                     } else {
                         printf("Erreur");
                     }
+                   
                 }
+                creationDossier(nom,prenom);
                     //Envoie d'un msg au client
                     strcpy(tampon, "Message bien reçu!\n");
                     send(fdSocketCommunication, tampon, strlen(tampon), 0);

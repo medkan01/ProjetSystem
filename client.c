@@ -24,6 +24,8 @@ int main(int argc, char const *argv[])
     int nbRecu;
     struct sockaddr_in coordServeur;
     int longueurAdresse;
+    char nom[100];
+    char prenom[100];
     char message[100];
     char adresseServeur[15];
 
@@ -51,14 +53,14 @@ int main(int argc, char const *argv[])
             printf("Connexion réussie !\n");
             ////////////////////////////////////////////////////////
             printf("Veuillez saisir votre nom:\n");
-            scanf("%[^\n]", message);
-            send(fdSocket, message, strlen(message), 0);
+            scanf("%[^\n]", nom);
+            getchar();
+            send(fdSocket, nom, strlen(nom), 0);
             ////////////////////////////////////////////////////////
             printf("Veuillez saisir votre prenom:\n");
-            scanf("%[^\n]", message);
+            scanf("%[^\n]", prenom);
             getchar();
-            send(fdSocket, message, strlen(message), 0);
-            send(fdSocket, "saisieFini", strlen(message), 0);
+            send(fdSocket, prenom, strlen(prenom), 0);
             nbRecu = recv(fdSocket, message, 99, 0);
             ////////////////////////////////////////////////////////
             if(nbRecu > 0){
