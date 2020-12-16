@@ -16,3 +16,9 @@ typedef struct{
     int places_libres; //nombre de places libres dans la salle
 } salle;
 
+typedef struct{
+    boolean instanceOf; //boolean permettant de savoir si la structure actuelle est utilisée ou non
+
+    int no_dossier; //numéro du dossier
+    char nom[100]; //nom de la personne associée au numéro de dossier
+} dossier;
