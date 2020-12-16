@@ -22,23 +22,17 @@
 
 //delcaration des structures
 typedef struct{
-    boolean instanceOf; //boolean permettant de savoir si la structure actuelle est utilisée ou non
-
     int placesOccupees; //nombre de places occupées
     int placesLibres; //nombre de places libres dans la salle
 } salle;
 
 typedef struct{
-    boolean instanceOf; //boolean permettant de savoir si la structure actuelle est utilisée ou non
-
     int noDossier; //numéro du dossier
     char nom[100]; //nom de la personne associée au numéro de dossier
     char prenom[100]; //prenom de la personne associé au numéro de dossier
 } dossier;
 
 typedef struct{
-    boolean instanceOf; //boolean permettant de savoir si la structure actuelle est utilisée ou non
-
     char adresseClient[100]; //adresse du client
     int port; //port
 
@@ -48,30 +42,80 @@ typedef struct{
 } communication;
 
 //declaration des fonctions
-void creationDossier(dossier* d);
+struct dossier creationDossier(char nom, char prenom);
 void initSalle(salle* s);
 void initCommunication(communication* c);
-void afficherMenuPrincipal(void* arg);
+void afficherMenuPrincipal();
 void afficherMenuInscription();
 void afficherMenuDesinscription();
 
-void affichereMenuPrincipal(void* arg){
-    printf("Bienvenue:\nVeuillez entrer le votre choix à l'aide du numéro associé à celui-ci.\n");
-    printf("1. S'inscrire");
-    printf("2. Se désinscrire");
-    printf("3. Quitter\n");
+void afficherMenuInscription(fdSocketCommunication){
+    //declaration des variables de travail
+    char text[100];
+    int nbRecu;
+    char nom, prenom;
+    dossier d;
+
+    //envoi d'une demande de saisie du nom au client
+    strcpy(text, "Inscription:\nVeuillez saisir votre nom:\n");
+    send(fdSocketCommunication, text, strlen(text), 0);
+
+    //reception de la saisie
+    nbRecu = recv(fdSocketCommunication, text, 99, 0);
+    if(nbRecu > 0){
+        text[nbRecu] = 0;
+        printf("Reçu: %s\n", text);
+        //stockage du nom
+        nom = text;
+    } else {
+        printf("Erreur");
+    }
+
+    //envoi d'une demande de saisie du prenom au client
+    strcpy(text, "Veuillez saisir votre prenom:\n");
+    send(fdSocketCommunication, text, strlen(text), 0);
+    nbRecu = recv(fdSocketCommunication, text, 99, 0);
+    if(nbRecu > 0){
+        text[nbRecu] = 0;
+        printf("Reçu: %s\n", text);
+        //stockage du prenom
+        prenom = text;
+    } else {
+        printf("Erreur");
+    }
+
+    d = creationDossier(nom, prenom);
 }
 
-void afficherMenuInscription(){
-    printf("Inscription:\n");
-    printf("Veuillez saisir votre nom puis votre prenom\n");
-}
-
+//fonction menu desinscription
 void afficherMenuDesinscription(){
     printf("Désinscription:\n");
     printf("Veuillez saisir le numéro de dossier qui vous a été donné lors de l'inscription.");
     printf("Ce numéro de dossier est composé de 10 chiffres.\n");
 }
+
+//fonction menu principal
+void menuPrincipal(){
+    printf("Bienvenue:\nVeuillez entrer le votre choix à l'aide du numéro associé à celui-ci.\n");
+    printf("1. S'inscrire\n");
+    printf("2. Se désinscrire\n");
+    printf("3. Quitter\n");
+}
+
+struct dossier creationDossier(char nom, char prenom){
+    dossier d;
+    d.nom = nom;
+    d.prenom = prenom;
+
+
+    return d;
+}
+
+int randint(bi, bs){
+    
+}
+
+
 
 //main program
 int main(int argc, char const *argv[])
@@ -118,7 +162,6 @@ int main(int argc, char const *argv[])
 
             while(true){
                 printf("En attente de connexion..\n");
-                printf("Pour voir les clients connectés ainsi que leur status, appuyez sur Entrée\n");
                 //test accept
                 if((fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *) &coordClient, &tailleCoord)) == -1){
                     printf("Erreur ! Accept incorrect\n");
