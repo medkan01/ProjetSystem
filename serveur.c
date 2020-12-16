@@ -19,10 +19,10 @@
 #define false 0 //
 #define MAX_PLACES 100 //nombre maximum de places
 #define null NULL //null
+#define TAILLE_NO_DOSSIER 10 //taille du numero dossier
 
 //delcaration des structures
 typedef struct{
-    int placesOccupees; //nombre de places occupées
     int placesLibres; //nombre de places libres dans la salle
 } Salle;
 
@@ -36,6 +36,8 @@ typedef struct{
     Dossier* dossier;
     struct listeDossier * dossierSuivant;
 } listeDossiers;
+
+listeDossiers liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
 
 //declaration des fonctions
 Dossier* creationDossier(char nom[20], char prenom[20]);
@@ -99,6 +101,7 @@ void menuPrincipal(){
     printf("3. Quitter\n");
 }
 
+//fonction de creation de dossier
 Dossier* creationDossier(char nom[20], char prenom[20]){
     Dossier* d;
     *d->nom = *nom;
@@ -108,10 +111,11 @@ Dossier* creationDossier(char nom[20], char prenom[20]){
     return d;
 }
 
+//generation d'un numero de dossier
 int numeroDossier(){
     int no;
     int coef = 1;
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
         int n = randint(0,9);
         no += n*coef;
         coef *= 10;
@@ -119,13 +123,13 @@ int numeroDossier(){
     return no;
 }
 
+//retourn un numero aleatoire
 int randint(int bi, int bs){
     int n;
     srand(time(null));
     n = rand() % bs + bi;
+    return n;
 }
-
-
 
 //main program
 int main(int argc, char const *argv[])
@@ -138,6 +142,8 @@ int main(int argc, char const *argv[])
     int longueurAdresse;
     int nbRecu;
     char tampon[100];
+    Salle* salle;
+    salle->placesLibres = MAX_PLACES - sizeof(*liste);
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
