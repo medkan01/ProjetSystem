@@ -11,7 +11,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
-//Declaration des constantes
+//declaration des constantes
 #define PORT 3000 //port de connexion
 #define MAX_BUFFER 1000 //buffer
 #define boolean int //type booleen
@@ -19,7 +19,7 @@
 #define false 0 //
 #define MAX_PLACES 100 //nombre maximum de places
 
-//Delcaration des structures
+//delcaration des structures
 typedef struct{
     boolean instanceOf; //boolean permettant de savoir si la structure actuelle est utilisée ou non
 
@@ -51,6 +51,7 @@ void creationDossier(dossier* d);
 void initSalle(salle* s);
 void initCommunication(communication* c);
 
+//main program
 int main(int argc, char const *argv[])
 {
     //initialisation des variables
@@ -69,7 +70,7 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    //Preparation de l'adresse d'attachement locale
+    //preparation de l'adresse d'attachement locale
     longueurAdresse = sizeof(struct sockaddr_in);
     memset(&coordServeur, 0x00, longueurAdresse);
 
