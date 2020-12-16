@@ -13,7 +13,7 @@
 
 
 //declaration des constantes
-#define LOCALHOST "192.168.1.183"
+#define LOCALHOST "127.0.0.1"
 #define PORT 3000 //port de connexion au serveur
 #define MAX_BUFFER 1000 //buffer
 
@@ -25,6 +25,8 @@ int main(int argc, char const *argv[])
     struct sockaddr_in coordServeur;
     int longueurAdresse;
     char tampon[100];
+    char message;
+    char adresseServeur;
 
     //initialisation socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -37,7 +39,9 @@ int main(int argc, char const *argv[])
         memset(&coordServeur, 0x00, longueurAdresse);
         coordServeur.sin_family = PF_INET;
         //adresse serveur en local
-        inet_aton(LOCALHOST, &coordServeur.sin_addr);
+        printf("Veuillez saisir l'adresse du serveur:\n");
+        scanf("%s", &adresseServeur);
+        inet_aton(&adresseServeur, &coordServeur.sin_addr);
         //Interfaces dispo
         coordServeur.sin_port = (htons(PORT));
         if(connect(fdSocket, (struct sockaddr *) &coordServeur, sizeof(coordServeur)) == -1){
@@ -45,7 +49,11 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-            strcpy(tampon, "Message du client vers le serveur\n");
+            //////////////////////////////////////
+            printf("Veuillez saisir un message:\n");
+            scanf("%s", &message);
+            //////////////////////////////////////
+            strcpy(tampon, &message);
             send(fdSocket, tampon, strlen(tampon), 0);
             nbRecu = recv(fdSocket, tampon, 99, 0);
             if(nbRecu > 0){
