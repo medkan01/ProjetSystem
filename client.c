@@ -13,7 +13,7 @@
 
 
 //declaration des constantes
-#define LOCALHOST "127.0.0.1"
+#define LOCALHOST "192.168.1.136"
 #define PORT 3000 //port de connexion au serveur
 #define MAX_BUFFER 1000 //buffer
 
