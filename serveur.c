@@ -19,6 +19,7 @@
 #define false 0 //
 #define MAX_PLACES 100 //nombre maximum de places
 #define null NULL //null
+#define NO_DOSSIER_NB_MAX 10
 
 //delcaration des structures
 typedef struct{
@@ -99,6 +100,7 @@ void menuPrincipal(){
     printf("3. Quitter\n");
 }
 
+//fonction de creation de dossier
 Dossier* creationDossier(char nom[20], char prenom[20]){
     Dossier* d;
     *d->nom = *nom;
@@ -108,10 +110,11 @@ Dossier* creationDossier(char nom[20], char prenom[20]){
     return d;
 }
 
+//generation de numero de dossier
 int numeroDossier(){
     int no;
     int coef = 1;
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < NO_DOSSIER_NB_MAX; i++){
         int n = randint(0,9);
         no += n*coef;
         coef *= 10;
