@@ -132,6 +132,8 @@ int main(int argc, char const *argv[])
                     if(nbRecu > 0){
                         tampon[nbRecu] = 0;
                         printf("Reçu: %s\n", tampon);
+                    } else {
+                        printf("Erreur");
                     }
 
                     //Envoie d'un msg au client

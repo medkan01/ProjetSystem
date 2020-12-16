@@ -51,9 +51,8 @@ int main(int argc, char const *argv[])
             printf("Connexion réussie !\n");
             //////////////////////////////////////
             printf("Veuillez saisir un message:\n");
-            scanf("%s", &message);
+            scanf("%s", tampon);
             //////////////////////////////////////
-            strcpy(tampon, &message);
             send(fdSocket, tampon, strlen(tampon), 0);
             nbRecu = recv(fdSocket, tampon, 99, 0);
             if(nbRecu > 0){
