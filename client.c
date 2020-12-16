@@ -24,9 +24,8 @@ int main(int argc, char const *argv[])
     int nbRecu;
     struct sockaddr_in coordServeur;
     int longueurAdresse;
-    char tampon[100];
-    char message;
-    char adresseServeur;
+    char message[100];
+    char adresseServeur[15];
 
     //initialisation socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -40,8 +39,9 @@ int main(int argc, char const *argv[])
         coordServeur.sin_family = PF_INET;
         //adresse serveur en local
         printf("Veuillez saisir l'adresse du serveur:\n");
-        scanf("%s", &adresseServeur);
-        inet_aton(&adresseServeur, &coordServeur.sin_addr);
+        scanf("%[^\n]", adresseServeur);
+        getchar();
+        inet_aton(adresseServeur, &coordServeur.sin_addr);
         //Interfaces dispo
         coordServeur.sin_port = (htons(PORT));
         if(connect(fdSocket, (struct sockaddr *) &coordServeur, sizeof(coordServeur)) == -1){
@@ -51,13 +51,14 @@ int main(int argc, char const *argv[])
             printf("Connexion réussie !\n");
             //////////////////////////////////////
             printf("Veuillez saisir un message:\n");
-            scanf("%s", tampon);
+            scanf("%[^\n]", message);
+            getchar();
             //////////////////////////////////////
-            send(fdSocket, tampon, strlen(tampon), 0);
-            nbRecu = recv(fdSocket, tampon, 99, 0);
+            send(fdSocket, message, strlen(message), 0);
+            nbRecu = recv(fdSocket, message, 99, 0);
             if(nbRecu > 0){
-                tampon[nbRecu] = 0;
-                printf("Reçu: %s\n", tampon);
+                message[nbRecu] = 0;
+                printf("Reçu: %s\n", message);
             }
             close(fdSocket);
         }
