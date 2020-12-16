@@ -22,3 +22,15 @@ typedef struct{
     int no_dossier; //numéro du dossier
     char nom[100]; //nom de la personne associée au numéro de dossier
 } dossier;
+
+typedef struct{
+    boolean instanceOf; //boolean permettant de savoir si la structure actuelle est utilisée ou non
+
+    char adresse_client[100]; //adresse du client
+    int port; //port
+
+    int index; //index du tableau
+    int fdSocketAttente;
+    int fdSocketCommunication;
+} communication;
+
