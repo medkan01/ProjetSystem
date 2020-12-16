@@ -49,11 +49,11 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-            //////////////////////////////////////
+            ////////////////////////////////////////////////////////
             printf("Veuillez saisir un message:\n");
             scanf("%[^\n]", message);
             getchar();
-            //////////////////////////////////////
+            ////////////////////////////////////////////////////////
             send(fdSocket, message, strlen(message), 0);
             nbRecu = recv(fdSocket, message, 99, 0);
             if(nbRecu > 0){
