@@ -32,33 +32,29 @@ typedef struct{
     char prenom[20]; //prenom de la personne associé au numéro de dossier
 } Dossier;
 
-typedef struct{
-    Dossier dossier;
-    struct CaseDossier * dossierSuivant;
-} CaseDossier;
-typedef CaseDossier * listeDossiers;
-
-listeDossiers liste; //creation d'une liste des dossiers, et donc du nombre de place dispo.
+Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
+int nbDossier = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
-Dossier* creationDossier(char nom[20], char prenom[20]);
+Dossier creationDossier(char nom[20], char prenom[20]);
 void initSalle(Salle* s);
 void afficherMenuPrincipal();
 void afficherMenuInscription();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
-void ajoutDossierEnTete(listeDossiers liste, Dossier d);
-void rechElement(listeDossiers liste, Dossier d);
-listeDossiers creerCase(Dossier d);
 
 void afficherMenuInscription(int fdSocketCommunication){
     //declaration des variables de travail
     char text[100];
     int nbRecu;
     char nom[20], prenom[20];
-    Dossier* d;
+    Dossier d;
 
+    //envoi d'un signal au client pour lancer la procédur d'inscription
+    strcpy(text, "inscription");
+    send(fdSocketCommunication, text, strlen(text), 0);
+    text[nbRecu] = 0;
     //envoi d'une demande de saisie du nom au client
     strcpy(text, "Inscription:\nVeuillez saisir votre nom:\n");
     send(fdSocketCommunication, text, strlen(text), 0);
@@ -70,25 +66,26 @@ void afficherMenuInscription(int fdSocketCommunication){
         printf("Reçu: %s\n", text);
         //stockage du nom
         *nom = *text;
+            //envoi d'une demande de saisie du prenom au client
+            strcpy(text, "Veuillez saisir votre prenom:\n");
+            send(fdSocketCommunication, text, strlen(text), 0);
+            nbRecu = recv(fdSocketCommunication, text, 99, 0);
+            if(nbRecu > 0){
+                text[nbRecu] = 0;
+                printf("Reçu: %s\n", text);
+                //stockage du prenom
+                *prenom = *text;
+                d = creationDossier(nom, prenom);
+                liste[nbDossier] = d;
+                nbDossier += 1;
+                char str[12];
+                sprintf(str, "%d", d.noDossier);
+                strcpy(text, str);
+                send(fdSocketCommunication, text, strlen(text), 0);
+            }
     } else {
         printf("Erreur");
     }
-
-    //envoi d'une demande de saisie du prenom au client
-    strcpy(text, "Veuillez saisir votre prenom:\n");
-    send(fdSocketCommunication, text, strlen(text), 0);
-    nbRecu = recv(fdSocketCommunication, text, 99, 0);
-    if(nbRecu > 0){
-        text[nbRecu] = 0;
-        printf("Reçu: %s\n", text);
-        //stockage du prenom
-        *prenom = *text;
-    } else {
-        printf("Erreur");
-    }
-
-    d = creationDossier(nom, prenom);
-
 }
 
 //fonction menu desinscription
@@ -107,13 +104,12 @@ void menuPrincipal(){
 }
 
 //fonction de creation de dossier
-Dossier* creationDossier(char nom[20], char prenom[20]){
-    Dossier* d;
-    *d->nom = *nom;
-    *d->prenom = *prenom;
-    d->noDossier = numeroDossier();
+Dossier creationDossier(char nom[20], char prenom[20]){
+    Dossier d;
+    *d.nom = *nom;
+    *d.prenom = *prenom;
+    d.noDossier = numeroDossier();
     
-
     return d;
 }
 
@@ -137,23 +133,6 @@ int randint(int bi, int bs){
     return n;
 }
 
-void ajoutDossierEnTete(listeDossiers L, Dossier d){
-    listeDossiers P = creerCase(d);
-    P->dossierSuivant = L;
-    L = P;
-}
-
-listeDossiers creerCase(Dossier d){
-    listeDossiers L;
-    L->dossier = d;
-    L->dossierSuivant = null;
-    return L;
-}
-
-void rechElement(listeDossiers liste, Dossier d){
-
-}
-
 //main program
 int main(int argc, char const *argv[])
 {
@@ -164,9 +143,6 @@ int main(int argc, char const *argv[])
     struct sockaddr_in coordClient;
     int longueurAdresse;
     int nbRecu;
-    char tampon[100];
-    Salle* salle;
-    salle->placesLibres = MAX_PLACES - sizeof(*liste);
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
@@ -208,19 +184,9 @@ int main(int argc, char const *argv[])
                 } else {
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
-
-                    nbRecu = recv(fdSocketCommunication, tampon, 99, 0);
-                    if(nbRecu > 0){
-                        tampon[nbRecu] = 0;
-                        printf("Reçu: %s\n", tampon);
-                    } else {
-                        printf("Erreur");
-                    }
-
-                    //Envoie d'un msg au client
-                    strcpy(tampon, "Message bien reçu!\n");
-                    send(fdSocketCommunication, tampon, strlen(tampon), 0);
-                    printf("Connexion fermée..\n\n");
+                    ///////////////////////////////////////////
+                    afficherMenuInscription(fdSocketCommunication);
+                    ///////////////////////////////////////////
                 }
             }
             close(fdSocketCommunication);
