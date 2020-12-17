@@ -14,7 +14,7 @@
 //declaration des constantes
 #define PORT 3000 //port de connexion
 #define MAX_BUFFER 1000 //buffer
-#define boolean int //type booleen
+#define bool int //type booleen
 #define true 1 //
 #define false 0 //
 #define MAX_PLACES 100 //nombre maximum de places
@@ -32,13 +32,7 @@ typedef struct{
     char prenom[20]; //prenom de la personne associé au numéro de dossier
 } Dossier;
 
-typedef struct{
-    Dossier dossier;
-    struct CaseDossier * dossierSuivant;
-} CaseDossier;
-typedef CaseDossier * listeDossiers;
-
-listeDossiers liste; //creation d'une liste des dossiers, et donc du nombre de place dispo.
+Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
 
 //declaration des fonctions
 Dossier* creationDossier(char nom[20], char prenom[20]);
@@ -48,9 +42,8 @@ void afficherMenuInscription();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
-void ajoutDossierEnTete(listeDossiers liste, Dossier d);
-void rechElement(listeDossiers liste, Dossier d);
-listeDossiers creerCase(Dossier d);
+bool rechElement(Dossier liste[], Dossier d);
+void ajoutDossier(Dossier liste[], Dossier d);
 
 void afficherMenuInscription(int fdSocketCommunication){
     //declaration des variables de travail
@@ -137,21 +130,19 @@ int randint(int bi, int bs){
     return n;
 }
 
-void ajoutDossierEnTete(listeDossiers L, Dossier d){
-    listeDossiers P = creerCase(d);
-    P->dossierSuivant = L;
-    L = P;
+bool rechElement(Dossier liste[], Dossier d){
+    int noDossier1 = d.noDossier;
+    for(int i = 0; i<sizeof(liste); i++){
+        int noDossier2 = liste[i].noDossier;
+        if(noDossier1 == noDossier2){
+            return true;
+        }
+    }
+    return false;
 }
 
-listeDossiers creerCase(Dossier d){
-    listeDossiers L;
-    L->dossier = d;
-    L->dossierSuivant = null;
-    return L;
-}
-
-void rechElement(listeDossiers liste, Dossier d){
-
+void ajoutDossier(Dossier liste[], Dossier d){
+    
 }
 
 //main program
