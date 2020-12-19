@@ -46,15 +46,16 @@ void createNoDossier(int n[10]);
 void toString(int n, char str[]);
 void procInscription(int socket);
 void procDesinscription(int socket);
-bool rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
-void supprimerDossier(char noDossier[TAILLE_NO_DOSSIER]);
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
+void supprimerDossier(int emplacement);
 
 //procédure de désinscription d'un client
 void procDesinscription(int socket){
     //déclaration des variables
     char text[100], noDossier[TAILLE_NO_DOSSIER];
     int nbRecu = 0;
-    bool noDossierOk = false, dossierExistant = false;
+    bool noDossierOk = false;
+    int emplacementDossier = -1;
     //démarrage de la procédure de désinscription
     printf("Désinscription:\n");
     //Attente de réception du numéro de dossier de la part du client
@@ -69,10 +70,10 @@ void procDesinscription(int socket){
         }
     }
     //recherche du dossier à l'aide du numéro de dossier saisi
-    dossierExistant = rechercheDossier(noDossier);
-    if(dossierExistant == true){
+    emplacementDossier = rechercheDossier(noDossier);
+    if(emplacementDossier <= 0){
         //suppression du dossier car celui-ci est existant
-        supprimerDossier(noDossier);
+        supprimerDossier(emplacementDossier);
         printf("Le dossier à été supprimé avec succés !\n");
     } else {
         //dossier inexistant avec le numéro saisi. La procédure sera donc stoppée.
@@ -132,28 +133,23 @@ void procInscription(int socket){
     printf("Arret de la procédure d'inscription.\n\n");
 }
 
-bool rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
+//recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
     Dossier d;
     char noDossierTest[10];
     for(int i = 0; i < nbDossierTotal; i++){
         d = liste[i];
         noDossierToString(d.noDossier, noDossierTest);
         if(noDossierTest == noDossier){
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
 }
 
-void supprimerDossier(char noDossier[TAILLE_NO_DOSSIER]){
-    Dossier d;
-    char noDossierTest[10];
-    for(int i = 0; i < nbDossierTotal; i++){
-        d = liste[i];
-        noDossierToString(d.noDossier, noDossierTest);
-        if(noDossierTest == noDossier){
-            return true;
-        }
+void supprimerDossier(int emplacement){
+    for(int i = emplacement; i < nbDossierTotal; i++){
+        
     }
 }
 
