@@ -39,12 +39,48 @@ int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 Dossier creationDossier(char nom[20], char prenom[20]);
 void initSalle(Salle* s);
 void afficherMenuPrincipal();
-void procInscription(int socket);
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]);
 void createNoDossier(int n[10]);
 void toString(int n, char str[]);
+void procInscription(int socket);
+void procDesinscription(int socket);
+bool rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
+void supprimerDossier(char noDossier[TAILLE_NO_DOSSIER]);
+
+//procédure de désinscription d'un client
+void procDesinscription(int socket){
+    //déclaration des variables
+    char text[100], noDossier[TAILLE_NO_DOSSIER];
+    int nbRecu = 0;
+    bool noDossierOk = false, dossierExistant = false;
+    //démarrage de la procédure de désinscription
+    printf("Désinscription:\n");
+    //Attente de réception du numéro de dossier de la part du client
+    printf("En attente de la réception du numéro de dossier du client..\n");
+    while(noDossierOk == false){
+        nbRecu = recv(socket, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Nom: %s\n", text);
+            *noDossier = *text;
+            noDossierOk = true;
+        }
+    }
+    //recherche du dossier à l'aide du numéro de dossier saisi
+    dossierExistant = rechercheDossier(noDossier);
+    if(dossierExistant == true){
+        //suppression du dossier car celui-ci est existant
+        supprimerDossier(noDossier);
+        printf("Le dossier à été supprimé avec succés !\n");
+    } else {
+        //dossier inexistant avec le numéro saisi. La procédure sera donc stoppée.
+        printf("Le numéro de dossier est introuvable.\n");
+    }
+    //Arret de la procédure de désinscription
+    printf("Arret de la procédure de désincription.\n\n");
+}
 
 //procédure d'inscription d'un client
 void procInscription(int socket){
@@ -57,7 +93,7 @@ void procInscription(int socket){
     //démarrage de la procédure d'inscription
     printf("Inscription du client:\n");
     //attente de réception du nom de la part du client
-    printf("En attente de saisie du nom de la part du client..\n");
+    printf("En attente de la réception du nom de la part du client..\n");
     while(nomOk == false){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
@@ -68,7 +104,7 @@ void procInscription(int socket){
         }
     }
     //attente de réception du prénom de la part du client
-    printf("En attente de saisie du prénom de la part du client..\n");
+    printf("En attente de la réception du prénom de la part du client..\n");
     while(prenomOk == false){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
@@ -94,6 +130,31 @@ void procInscription(int socket){
     nbDossierTotal++;
     //arret de la procédure d'inscription
     printf("Arret de la procédure d'inscription.\n\n");
+}
+
+bool rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    Dossier d;
+    char noDossierTest[10];
+    for(int i = 0; i < nbDossierTotal; i++){
+        d = liste[i];
+        noDossierToString(d.noDossier, noDossierTest);
+        if(noDossierTest == noDossier){
+            return true;
+        }
+    }
+    return false;
+}
+
+void supprimerDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    Dossier d;
+    char noDossierTest[10];
+    for(int i = 0; i < nbDossierTotal; i++){
+        d = liste[i];
+        noDossierToString(d.noDossier, noDossierTest);
+        if(noDossierTest == noDossier){
+            return true;
+        }
+    }
 }
 
 //fonction menu desinscription

@@ -28,9 +28,30 @@ void procDesinscription(int socket);
 
 void procDesinscription(int socket){
     //declaration des variables
-    char text[100], nom[30], noDossier[TAILLE_NO_DOSSIER];
-    
-
+    char text[100], noDossier[TAILLE_NO_DOSSIER];
+    int nbRecu = 0;
+    bool procDesinscription = false;
+    //démarrage de la procédure de désinscription
+    printf("Désinscription:\n");
+    //saisie du numéro de dossier
+    printf("Veuillez saisir votre numéro de dossier:");
+    scanf("%[^\n]", noDossier);
+    getchar();
+    //envoi du numéro de dossier au serveur
+    strcpy(text, noDossier);
+    send(socket, text, strlen(text), 0);
+    //suppression du dossier
+    printf("En attente de suppression du dossier..\n");
+    while(procDesinscription == false){
+        nbRecu = recv(socket, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("%s\n", text);
+            procDesinscription = true;
+        }
+    }
+    //arret de la procédure de désinscription
+    printf("Arret de la procédure de désinscription.\n\n");
 }
 
 void procInscription(int socket){
@@ -38,7 +59,7 @@ void procInscription(int socket){
     char text[100], nom[30], prenom[30];
     bool dossierOk = false;
     int nbRecu = 0;
-    //debut de la procédure d'inscription
+    //démarrage de la procédure d'inscription
     printf("Inscription:\n");
     //saisie du nom du client
     printf("Veuillez saisir votre nom:\n");
