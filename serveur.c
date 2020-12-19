@@ -27,7 +27,7 @@ typedef struct{
 } Salle;
 
 typedef struct{
-    int noDossier; //numéro du dossier
+    int noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
     char nom[20]; //nom de la personne associée au numéro de dossier
     char prenom[20]; //prenom de la personne associé au numéro de dossier
 } Dossier;
@@ -42,7 +42,8 @@ void afficherMenuPrincipal();
 void procInscription(int socket);
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
-int numeroDossier();
+void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]);
+void createNoDossier(int n[10]);
 void toString(int n, char str[]);
 
 //procédure d'inscription d'un client
@@ -75,11 +76,11 @@ void procInscription(int socket){
         }
     }
     //remplissage du dossier
-    d.noDossier = numeroDossier();
+    createNoDossier(d.noDossier);
     *d.nom = *nom;
     *d.prenom = *prenom;
     //envoi du numero de dossier au client
-    toString(d.noDossier, noDoss);
+    noDossierToString(d.noDossier, noDoss);
     strcpy(text, noDoss);
     send(socket, text, strlen(text), 0);
     //ajout du dossier à la liste + incrémentation du nombre de dossier actuel
@@ -87,11 +88,6 @@ void procInscription(int socket){
     nbDossier++;
     //arret de la procédure d'inscription
     printf("Arret de la procédure d'inscription.\n\n");
-}
-
-//int to string
-void toString(int n, char str[]){
-    sprintf(str, "%i", n);
 }
 
 //fonction menu desinscription
@@ -128,14 +124,21 @@ void createNoDossier(int n[10]){
     for(int i = 0; i < 10; i++){
         n[i] = randint(0, 9);
     }
+    sleep(1); //sleep pour laisser au srand de recharger une nouvelle seed de generation, pour eviter les doublons de nombres aleatoires
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
-void noDossierToString(int noDossier[10]){
-    for(int i = 0; i < 10; i++){
-        printf("%i", noDossier[i]);
+void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]){
+    char chiffre[1];
+    for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
+        toString(noDossier[i], chiffre);
+        strcat(str, chiffre);
     }
-    
+}
+
+//int to string
+void toString(int n, char str[]){
+    sprintf(str, "%i", n);
 }
 
 //main program
