@@ -26,38 +26,11 @@ void procInscription(int fdSocket);
 
 void procInscription(int fdSocket){
     //declaration des variables
-    char text[100];
-    int nbRecu;
-    char nom[20], prenom[20];
-
-    //reception de la procedure d'inscription de la part du serveur --nom
-    nbRecu = recv(fdSocket, text, 99, 0);
-    if(nbRecu > 0){
-        text[nbRecu] = 0;
-        printf("Reçu: %s\n", text);
-        //saisie puis envoi du nom
-        scanf("%[^\n]", nom);
-        getchar();
-        send(fdSocket, nom, strlen(text), 0);
-        //reception de la procedure d'inscription de la part du serveur --prenom
-        nbRecu = recv(fdSocket, text, 99, 0);
-        if(nbRecu > 0){
-            text[nbRecu] = 0;
-            printf("Reçu: %s\n", text);
-            //saisie puis envoi du prenom
-            scanf("%[^\n]", prenom);
-            getchar();
-            send(fdSocket, prenom, strlen(text), 0);
-            //reception de la procedure d'inscription de la part du serveur --noDossier
-            nbRecu = recv(fdSocket, text, 99, 0);
-            if(nbRecu > 0){
-                text[nbRecu] = 0;
-                printf("Reçu: %s\n", text);
-            }
-        }
-    } else {
-        printf("Erreur");
-    }
+    char text[100], nom[30], prenom[30];
+    bool dossierOk = false;
+    int nbRecu = 0;
+    //debut de la procédure d'inscription
+    
 }
 
 int main(int argc, char const *argv[])
@@ -93,18 +66,6 @@ int main(int argc, char const *argv[])
         } else {
             printf("Connexion réussie !\n");
             while(true){
-                nbRecu = recv(fdSocket, message, 99, 0);
-                if(nbRecu > 0){
-                    message[nbRecu] = 0;
-                    printf("Reçu: %s\n", message);
-                }
-                ////////////////////////////////////////////////////////
-                if(message == "inscription"){
-                    procInscription(fdSocket);
-                }
-                ////////////////////////////////////////////////////////
-                send(fdSocket, message, strlen(message), 0);
-
             }
             close(fdSocket);
         }
