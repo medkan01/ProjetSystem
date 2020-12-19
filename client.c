@@ -56,6 +56,8 @@ void procInscription(int fdSocket){
         }
     }
     printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n");
+    //arret de la procédure d'inscription
+    printf("Arret de la procédure d'inscription.\n\n");
 }
 
 int main(int argc, char const *argv[])

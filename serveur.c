@@ -43,13 +43,53 @@ void afficherMenuInscription();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
+void toString(int n, char str[]);
 
 void afficherMenuInscription(int fdSocketCommunication){
     //declaration des variables
-    char text[100], nom[30], prenom[30];
+    char text[100], nom[30], prenom[30], noDoss[10];
     int nbRecu = 0;
     bool nomOk = false, prenomOk = false;
+    Dossier d;
     //démarrage de la procédure d'inscription
+    printf("Inscription du client:\n");
+    //attente de réception du nom de la part du client
+    while(nomOk == false){
+        nbRecu = recv(fdSocketCommunication, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Nom: %s\n", text);
+            *nom = *text;
+            nomOk = true;
+        }
+    }
+    //attente de réception du prénom de la part du client
+    while(prenomOk == false){
+        nbRecu = recv(fdSocketCommunication, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Prénom: %s\n", text);
+            *prenom = *text;
+            prenomOk = true;
+        }
+    }
+    //remplissage du dossier
+    d.noDossier = numeroDossier();
+    *d.nom = *nom;
+    *d.prenom = *prenom;
+    //envoi du numero de dossier au client
+    toString(d.noDossier, noDoss);
+    strcpy(text, noDoss);
+    send(fdSocketCommunication, text, strlen(text), 0);
+    //ajout du dossier à la liste + incrémentation du nombre de dossier actuel
+    liste[nbDossier] = d;
+    nbDossier++;
+    //arret de la procédure d'inscription
+    printf("Arret de la procédure d'inscription.\n\n");
+}
+
+//int to string
+void toString(int n, char str[]);{
     
 }
 
