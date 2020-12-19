@@ -51,7 +51,7 @@ void procInscription(int socket){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
             text[nbRecu] = 0;
-            printf("Dossier numéro: %s\n", text);
+            printf("Dossier numéro: %s\n\n\n", text);
             dossierOk = true;
         }
     }
