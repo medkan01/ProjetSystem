@@ -14,7 +14,7 @@
 //declaration des constantes
 #define PORT 3000 //port de connexion
 #define MAX_BUFFER 1000 //buffer
-#define boolean int //type booleen
+#define bool int //type booleen
 #define true 1 //
 #define false 0 //
 #define MAX_PLACES 100 //nombre maximum de places
@@ -32,63 +32,65 @@ typedef struct{
     char prenom[20]; //prenom de la personne associé au numéro de dossier
 } Dossier;
 
-typedef struct{
-    Dossier dossier;
-    struct CaseDossier * dossierSuivant;
-} CaseDossier;
-typedef CaseDossier * listeDossiers;
-
-listeDossiers liste; //creation d'une liste des dossiers, et donc du nombre de place dispo.
+Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
+int nbDossier = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
-Dossier* creationDossier(char nom[20], char prenom[20]);
+Dossier creationDossier(char nom[20], char prenom[20]);
 void initSalle(Salle* s);
 void afficherMenuPrincipal();
 void afficherMenuInscription();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
-void ajoutDossierEnTete(listeDossiers liste, Dossier d);
-void rechElement(listeDossiers liste, Dossier d);
-listeDossiers creerCase(Dossier d);
+void toString(int n, char str[]);
 
 void afficherMenuInscription(int fdSocketCommunication){
-    //declaration des variables de travail
-    char text[100];
-    int nbRecu;
-    char nom[20], prenom[20];
-    Dossier* d;
-
-    //envoi d'une demande de saisie du nom au client
-    strcpy(text, "Inscription:\nVeuillez saisir votre nom:\n");
-    send(fdSocketCommunication, text, strlen(text), 0);
-
-    //reception de la saisie
-    nbRecu = recv(fdSocketCommunication, text, 99, 0);
-    if(nbRecu > 0){
-        text[nbRecu] = 0;
-        printf("Reçu: %s\n", text);
-        //stockage du nom
-        *nom = *text;
-    } else {
-        printf("Erreur");
+    //declaration des variables
+    char text[100], nom[30], prenom[30], noDoss[10];
+    int nbRecu = 0;
+    bool nomOk = false, prenomOk = false;
+    Dossier d;
+    //démarrage de la procédure d'inscription
+    printf("Inscription du client:\n");
+    //attente de réception du nom de la part du client
+    while(nomOk == false){
+        nbRecu = recv(fdSocketCommunication, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Nom: %s\n", text);
+            *nom = *text;
+            nomOk = true;
+        }
     }
-
-    //envoi d'une demande de saisie du prenom au client
-    strcpy(text, "Veuillez saisir votre prenom:\n");
-    send(fdSocketCommunication, text, strlen(text), 0);
-    nbRecu = recv(fdSocketCommunication, text, 99, 0);
-    if(nbRecu > 0){
-        text[nbRecu] = 0;
-        printf("Reçu: %s\n", text);
-        //stockage du prenom
-        *prenom = *text;
-    } else {
-        printf("Erreur");
+    //attente de réception du prénom de la part du client
+    while(prenomOk == false){
+        nbRecu = recv(fdSocketCommunication, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Prénom: %s\n", text);
+            *prenom = *text;
+            prenomOk = true;
+        }
     }
+    //remplissage du dossier
+    d.noDossier = numeroDossier();
+    *d.nom = *nom;
+    *d.prenom = *prenom;
+    //envoi du numero de dossier au client
+    toString(d.noDossier, noDoss);
+    strcpy(text, noDoss);
+    send(fdSocketCommunication, text, strlen(text), 0);
+    //ajout du dossier à la liste + incrémentation du nombre de dossier actuel
+    liste[nbDossier] = d;
+    nbDossier++;
+    //arret de la procédure d'inscription
+    printf("Arret de la procédure d'inscription.\n\n");
+}
 
-    d = creationDossier(nom, prenom);
-
+//int to string
+void toString(int n, char str[]){
+        
 }
 
 //fonction menu desinscription
@@ -107,13 +109,12 @@ void menuPrincipal(){
 }
 
 //fonction de creation de dossier
-Dossier* creationDossier(char nom[20], char prenom[20]){
-    Dossier* d;
-    *d->nom = *nom;
-    *d->prenom = *prenom;
-    d->noDossier = numeroDossier();
+Dossier creationDossier(char nom[20], char prenom[20]){
+    Dossier d;
+    *d.nom = *nom;
+    *d.prenom = *prenom;
+    d.noDossier = numeroDossier();
     
-
     return d;
 }
 
@@ -137,23 +138,6 @@ int randint(int bi, int bs){
     return n;
 }
 
-void ajoutDossierEnTete(listeDossiers L, Dossier d){
-    listeDossiers P = creerCase(d);
-    P->dossierSuivant = L;
-    L = P;
-}
-
-listeDossiers creerCase(Dossier d){
-    listeDossiers L;
-    L->dossier = d;
-    L->dossierSuivant = null;
-    return L;
-}
-
-void rechElement(listeDossiers liste, Dossier d){
-
-}
-
 //main program
 int main(int argc, char const *argv[])
 {
@@ -164,9 +148,6 @@ int main(int argc, char const *argv[])
     struct sockaddr_in coordClient;
     int longueurAdresse;
     int nbRecu;
-    char tampon[100];
-    Salle* salle;
-    salle->placesLibres = MAX_PLACES - sizeof(*liste);
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
@@ -208,19 +189,9 @@ int main(int argc, char const *argv[])
                 } else {
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
-
-                    nbRecu = recv(fdSocketCommunication, tampon, 99, 0);
-                    if(nbRecu > 0){
-                        tampon[nbRecu] = 0;
-                        printf("Reçu: %s\n", tampon);
-                    } else {
-                        printf("Erreur");
-                    }
-
-                    //Envoie d'un msg au client
-                    strcpy(tampon, "Message bien reçu!\n");
-                    send(fdSocketCommunication, tampon, strlen(tampon), 0);
-                    printf("Connexion fermée..\n\n");
+                    ///////////////////////////////////////////
+                    afficherMenuInscription(fdSocketCommunication);
+                    ///////////////////////////////////////////
                 }
             }
             close(fdSocketCommunication);

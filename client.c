@@ -14,8 +14,51 @@
 
 //declaration des constantes
 #define LOCALHOST "127.0.0.1"
-#define PORT 3000 //port de connexion au serveur
+#define PORT 3000 //port de connexion
 #define MAX_BUFFER 1000 //buffer
+#define bool int //type booleen
+#define true 1 //
+#define false 0 //
+#define null NULL //null
+
+//declaration des fonctions
+void procInscription(int fdSocket);
+
+void procInscription(int fdSocket){
+    //declaration des variables
+    char text[100], nom[30], prenom[30];
+    bool dossierOk = false;
+    int nbRecu = 0;
+    //debut de la procédure d'inscription
+    printf("Inscription:\n");
+    //saisie du nom du client
+    printf("Veuillez saisir votre nom:\n");
+    scanf("%[^\n]", nom);
+    getchar();
+    //envoi du nom au serveur
+    strcpy(text, nom);
+    send(fdSocket, text, strlen(text), 0);
+    //saisie du prenom du client
+    printf("Veuillez saisir votre prénom:\n");
+    scanf("%[^\n]", prenom);
+    getchar();
+    //envoi du prénom au serveur
+    strcpy(text, prenom);
+    send(fdSocket, text, strlen(text), 0);
+    //attente de creation de la part du serveur
+    printf("Veuillez patienter pendant la création du dossier..");
+    while(dossierOk == false){
+        nbRecu = recv(fdSocket, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Dossier numéro: %s\n", text);
+            dossierOk = true;
+        }
+    }
+    printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n");
+    //arret de la procédure d'inscription
+    printf("Arret de la procédure d'inscription.\n\n");
+}
 
 int main(int argc, char const *argv[])
 {
@@ -49,16 +92,7 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-            ////////////////////////////////////////////////////////
-            printf("Veuillez saisir un message:\n");
-            scanf("%[^\n]", message);
-            getchar();
-            ////////////////////////////////////////////////////////
-            send(fdSocket, message, strlen(message), 0);
-            nbRecu = recv(fdSocket, message, 99, 0);
-            if(nbRecu > 0){
-                message[nbRecu] = 0;
-                printf("Reçu: %s\n", message);
+            while(true){
             }
             close(fdSocket);
         }
