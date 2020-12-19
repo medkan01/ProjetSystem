@@ -78,6 +78,8 @@ void procInscription(int socket){
             prenomOk = true;
         }
     }
+    //etape de creation du dossier
+    printf("Création du dossier en cours..\n");
     //creation du numero de dossier
     createNoDossier(d.noDossier);
     noDossierToString(d.noDossier, str);
