@@ -149,8 +149,11 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
 
 void supprimerDossier(int emplacement){
     for(int i = emplacement; i < nbDossierTotal; i++){
-        
+        if(i != nbDossierTotal-1){
+            liste[i] = liste[i+1];
+        }
     }
+    nbDossierTotal--;
 }
 
 //fonction menu desinscription
