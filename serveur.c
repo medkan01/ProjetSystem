@@ -257,9 +257,10 @@ int main(int argc, char const *argv[])
                 } else {
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
-                    nbRecu = recv(socket, text, 99, 0);
+                    nbRecu = recv(fdSocketCommunication, text, 99, 0);
                     if(nbRecu > 0){
                         text[nbRecu] = 0;
+                        printf("%s", text);
                         if(text == "1"){
                             procInscription(fdSocketCommunication);
                         } else if(text == "2"){

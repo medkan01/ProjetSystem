@@ -99,7 +99,7 @@ int main(int argc, char const *argv[])
     int longueurAdresse;
     char text[100];
     char adresseServeur[15];
-    char choix;
+    int choix[1];
 
     //initialisation socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -125,26 +125,23 @@ int main(int argc, char const *argv[])
             printf("Connexion réussie !\n");
 
             printf("Que voulez vous faire:\n\n1.Inscription\n2.Désinscription\n");
-            scanf("%i", choix);
+            scanf("%i",choix);
             getchar();
-            switch (choix)
+            switch (*choix)
             {
             case 1:
                 strcpy(text, "1");
-                send(socket, text, strlen(text), 0);
+                send(fdSocket, text, strlen(text), 0);
                 procInscription(fdSocket);
                 break;
             case 2:
                 strcpy(text, "2");
-                send(socket, text, strlen(text), 0);
+                send(fdSocket, text, strlen(text), 0);
                 procDesinscription(fdSocket);
                 break;
             default:
                 break;
             }
-            ///////////////////////////////////////////
-            procInscription(fdSocket);
-            ///////////////////////////////////////////
             close(fdSocket);
         }
     }
