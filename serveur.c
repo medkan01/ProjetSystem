@@ -49,10 +49,11 @@ void toString(int n, char str[]);
 //procédure d'inscription d'un client
 void procInscription(int socket){
     //declaration des variables
-    char text[100], nom[30], prenom[30], str[100];
+    char text[100], nom[30], prenom[30], str[10];
     int nbRecu = 0;
     bool nomOk = false, prenomOk = false;
     Dossier d;
+    srand(time(null));
     //démarrage de la procédure d'inscription
     printf("Inscription du client:\n");
     //attente de réception du nom de la part du client
@@ -77,13 +78,19 @@ void procInscription(int socket){
             prenomOk = true;
         }
     }
-
-    printf("Debug 1\n");
+    //creation du numero de dossier
     createNoDossier(d.noDossier);
-    printf("Debug 2\n");
     noDossierToString(d.noDossier, str);
-    printf("Debug 3\n");
-    printf("No Dossier: %s\n", str);
+    //envoi du numero de dossier au client
+    strcpy(text, str);
+    send(socket, text, strlen(text), 0);
+    //finition de la creation du dossier
+    *d.nom = *nom;
+    *d.prenom = *prenom;
+    //ajout du dossier à la liste
+    liste[nbDossierTotal] = d;
+    nbDossierTotal++;
+    //arret de la procédure d'inscription
     printf("Arret de la procédure d'inscription.\n\n");
 }
 
@@ -116,12 +123,10 @@ int randint(int bi, int bs){
 
 //creer le numero de dossier dans une table d'entier
 void createNoDossier(int n[10]){
-    srand(time(null));
     int coef = 1;
     for(int i = 0; i < 10; i++){
         n[i] = randint(0, 9);
     }
-    sleep(1); //sleep pour laisser au srand de recharger une nouvelle seed de generation, pour eviter les doublons de nombres aleatoires
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
