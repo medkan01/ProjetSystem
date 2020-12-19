@@ -81,7 +81,7 @@ void procInscription(int socket){
     *d.prenom = *prenom;
     //envoi du numero de dossier au client
     noDossierToString(d.noDossier, noDoss);
-    strcpy(text, noDoss);
+    *text = *noDoss;
     send(socket, text, strlen(text), 0);
     //ajout du dossier à la liste + incrémentation du nombre de dossier actuel
     liste[nbDossier] = d;
