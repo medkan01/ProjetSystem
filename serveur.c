@@ -33,7 +33,7 @@ typedef struct{
 } Dossier;
 
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
-int nbDossier = 0; //variable qui donne le nombre de dossier créé
+int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
 Dossier creationDossier(char nom[20], char prenom[20]);
@@ -56,6 +56,7 @@ void procInscription(int socket){
     //démarrage de la procédure d'inscription
     printf("Inscription du client:\n");
     //attente de réception du nom de la part du client
+    printf("En attente de saisie du nom de la part du client..\n");
     while(nomOk == false){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
@@ -66,6 +67,7 @@ void procInscription(int socket){
         }
     }
     //attente de réception du prénom de la part du client
+    printf("En attente de saisie du prénom de la part du client..\n");
     while(prenomOk == false){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
@@ -75,20 +77,10 @@ void procInscription(int socket){
             prenomOk = true;
         }
     }
-    //remplissage du dossier
+
+    printf("Debug 1\n");
     createNoDossier(d.noDossier);
-    *d.nom = *nom;
-    *d.prenom = *prenom;
-    //envoi du numero de dossier au client
-    noDossierToString(d.noDossier, noDoss);
-    printf("%s\n", noDoss);
-    strcpy(text, noDoss);
-    printf("%s\n", text);
-    send(socket, text, strlen(text), 0);
-    //ajout du dossier à la liste + incrémentation du nombre de dossier actuel
-    liste[nbDossier] = d;
-    nbDossier++;
-    //arret de la procédure d'inscription
+    printf("Debug 2\n");
     printf("Arret de la procédure d'inscription.\n\n");
 }
 
@@ -126,7 +118,7 @@ void createNoDossier(int n[10]){
     for(int i = 0; i < 10; i++){
         n[i] = randint(0, 9);
     }
-    sleep(1); //sleep pour laisser au srand de recharger une nouvelle seed de generation, pour eviter les doublons de nombres aleatoires
+    //sleep(1); //sleep pour laisser au srand de recharger une nouvelle seed de generation, pour eviter les doublons de nombres aleatoires
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
