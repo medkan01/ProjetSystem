@@ -215,6 +215,7 @@ int main(int argc, char const *argv[])
     struct sockaddr_in coordClient;
     int longueurAdresse;
     int nbRecu;
+    char text[100];
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
@@ -256,9 +257,15 @@ int main(int argc, char const *argv[])
                 } else {
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
-                    ///////////////////////////////////////////
-                    procInscription(fdSocketCommunication);
-                    ///////////////////////////////////////////
+                    nbRecu = recv(socket, text, 99, 0);
+                    if(nbRecu > 0){
+                        text[nbRecu] = 0;
+                        if(text == "1"){
+                            procInscription(fdSocketCommunication);
+                        } else if(text == "2"){
+                            procDesinscription(fdSocketCommunication);
+                        }
+                    }
                 }
             }
             close(fdSocketCommunication);
