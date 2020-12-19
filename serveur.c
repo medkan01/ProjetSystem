@@ -49,7 +49,7 @@ void toString(int n, char str[]);
 //procédure d'inscription d'un client
 void procInscription(int socket){
     //declaration des variables
-    char text[100], nom[30], prenom[30], noDoss[10];
+    char text[100], nom[30], prenom[30], str[100];
     int nbRecu = 0;
     bool nomOk = false, prenomOk = false;
     Dossier d;
@@ -81,6 +81,9 @@ void procInscription(int socket){
     printf("Debug 1\n");
     createNoDossier(d.noDossier);
     printf("Debug 2\n");
+    noDossierToString(d.noDossier, str);
+    printf("Debug 3\n");
+    printf("No Dossier: %s\n", str);
     printf("Arret de la procédure d'inscription.\n\n");
 }
 
@@ -118,7 +121,7 @@ void createNoDossier(int n[10]){
     for(int i = 0; i < 10; i++){
         n[i] = randint(0, 9);
     }
-    //sleep(1); //sleep pour laisser au srand de recharger une nouvelle seed de generation, pour eviter les doublons de nombres aleatoires
+    sleep(1); //sleep pour laisser au srand de recharger une nouvelle seed de generation, pour eviter les doublons de nombres aleatoires
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
