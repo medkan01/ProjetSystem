@@ -30,7 +30,13 @@ void procInscription(int fdSocket){
     bool dossierOk = false;
     int nbRecu = 0;
     //debut de la procédure d'inscription
-    
+    printf("Inscription:\n");
+    //saisie du nom du client
+    printf("Veuillez saisir votre nom:\n");
+    scanf("%[^\n]", nom);
+    getchar();
+    //envo
+
 }
 
 int main(int argc, char const *argv[])
