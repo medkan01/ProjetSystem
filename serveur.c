@@ -89,8 +89,8 @@ void afficherMenuInscription(int fdSocketCommunication){
 }
 
 //int to string
-void toString(int n, char str[]);{
-    
+void toString(int n, char str[]){
+        
 }
 
 //fonction menu desinscription
