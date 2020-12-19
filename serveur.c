@@ -39,13 +39,14 @@ int nbDossier = 0; //variable qui donne le nombre de dossier créé
 Dossier creationDossier(char nom[20], char prenom[20]);
 void initSalle(Salle* s);
 void afficherMenuPrincipal();
-void afficherMenuInscription();
+void procInscription(int socket);
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 int numeroDossier();
 void toString(int n, char str[]);
 
-void afficherMenuInscription(int fdSocketCommunication){
+//procédure d'inscription d'un client
+void procInscription(int socket){
     //declaration des variables
     char text[100], nom[30], prenom[30], noDoss[10];
     int nbRecu = 0;
@@ -55,7 +56,7 @@ void afficherMenuInscription(int fdSocketCommunication){
     printf("Inscription du client:\n");
     //attente de réception du nom de la part du client
     while(nomOk == false){
-        nbRecu = recv(fdSocketCommunication, text, 99, 0);
+        nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Nom: %s\n", text);
@@ -65,7 +66,7 @@ void afficherMenuInscription(int fdSocketCommunication){
     }
     //attente de réception du prénom de la part du client
     while(prenomOk == false){
-        nbRecu = recv(fdSocketCommunication, text, 99, 0);
+        nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Prénom: %s\n", text);
@@ -80,7 +81,7 @@ void afficherMenuInscription(int fdSocketCommunication){
     //envoi du numero de dossier au client
     toString(d.noDossier, noDoss);
     strcpy(text, noDoss);
-    send(fdSocketCommunication, text, strlen(text), 0);
+    send(socket, text, strlen(text), 0);
     //ajout du dossier à la liste + incrémentation du nombre de dossier actuel
     liste[nbDossier] = d;
     nbDossier++;
@@ -90,7 +91,7 @@ void afficherMenuInscription(int fdSocketCommunication){
 
 //int to string
 void toString(int n, char str[]){
-        
+    sprintf(str, "%i", n);
 }
 
 //fonction menu desinscription
@@ -109,13 +110,8 @@ void menuPrincipal(){
 }
 
 //fonction de creation de dossier
-Dossier creationDossier(char nom[20], char prenom[20]){
-    Dossier d;
-    *d.nom = *nom;
-    *d.prenom = *prenom;
-    d.noDossier = numeroDossier();
-    
-    return d;
+Dossier creationDossier(char nom[], char prenom[]){
+
 }
 
 //generation d'un numero de dossier
@@ -190,7 +186,7 @@ int main(int argc, char const *argv[])
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
                     ///////////////////////////////////////////
-                    afficherMenuInscription(fdSocketCommunication);
+                    procInscription(fdSocketCommunication);
                     ///////////////////////////////////////////
                 }
             }

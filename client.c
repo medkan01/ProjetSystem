@@ -22,9 +22,9 @@
 #define null NULL //null
 
 //declaration des fonctions
-void procInscription(int fdSocket);
+void procInscription(int socket);
 
-void procInscription(int fdSocket){
+void procInscription(int socket){
     //declaration des variables
     char text[100], nom[30], prenom[30];
     bool dossierOk = false;
@@ -37,18 +37,18 @@ void procInscription(int fdSocket){
     getchar();
     //envoi du nom au serveur
     strcpy(text, nom);
-    send(fdSocket, text, strlen(text), 0);
+    send(socket, text, strlen(text), 0);
     //saisie du prenom du client
     printf("Veuillez saisir votre prénom:\n");
     scanf("%[^\n]", prenom);
     getchar();
     //envoi du prénom au serveur
     strcpy(text, prenom);
-    send(fdSocket, text, strlen(text), 0);
+    send(socket, text, strlen(text), 0);
     //attente de creation de la part du serveur
     printf("Veuillez patienter pendant la création du dossier..");
     while(dossierOk == false){
-        nbRecu = recv(fdSocket, text, 99, 0);
+        nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Dossier numéro: %s\n", text);
@@ -92,8 +92,9 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-            while(true){
-            }
+            ///////////////////////////////////////////
+            procInscription(fdSocket);
+            ///////////////////////////////////////////
             close(fdSocket);
         }
     }
