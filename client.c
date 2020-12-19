@@ -16,7 +16,7 @@
 #define LOCALHOST "127.0.0.1"
 #define PORT 3000 //port de connexion
 #define MAX_BUFFER 1000 //buffer
-#define boolean int //type booleen
+#define bool int //type booleen
 #define true 1 //
 #define false 0 //
 #define null NULL //null
