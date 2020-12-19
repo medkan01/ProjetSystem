@@ -114,24 +114,28 @@ Dossier creationDossier(char nom[], char prenom[]){
 
 }
 
-//generation d'un numero de dossier
-int numeroDossier(){
-    int no;
-    int coef = 1;
-    for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
-        int n = randint(0,9);
-        no += n*coef;
-        coef *= 10;
-    }
-    return no;
-}
-
 //retourn un numero aleatoire
 int randint(int bi, int bs){
     int n;
-    srand(time(null));
-    n = rand() % bs + bi;
+    n = rand() % (bs+1) + bi;
     return n;
+}
+
+//creer le numero de dossier dans une table d'entier
+void createNoDossier(int n[10]){
+    srand(time(null));
+    int coef = 1;
+    for(int i = 0; i < 10; i++){
+        n[i] = randint(0, 9);
+    }
+}
+
+//rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
+void noDossierToString(int noDossier[10]){
+    for(int i = 0; i < 10; i++){
+        printf("%i", noDossier[i]);
+    }
+    
 }
 
 //main program
