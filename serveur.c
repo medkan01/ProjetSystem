@@ -71,13 +71,13 @@ void procDesinscription(int socket){
     }
     //recherche du dossier à l'aide du numéro de dossier saisi
     emplacementDossier = rechercheDossier(noDossier);
-    if(emplacementDossier <= 0){
+    if(emplacementDossier == -1){
+        //dossier inexistant avec le numéro saisi. La procédure sera donc stoppée.
+        printf("Le numéro de dossier est introuvable.\n");
+    } else {
         //suppression du dossier car celui-ci est existant
         supprimerDossier(emplacementDossier);
         printf("Le dossier à été supprimé avec succés !\n");
-    } else {
-        //dossier inexistant avec le numéro saisi. La procédure sera donc stoppée.
-        printf("Le numéro de dossier est introuvable.\n");
     }
     //Arret de la procédure de désinscription
     printf("Arret de la procédure de désincription.\n\n");
@@ -142,6 +142,7 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
         noDossierToString(d.noDossier, noDossierTest);
         if(noDossierTest == noDossier){
             return i;
+            printf("Debug\n");
         }
     }
     return -1;
@@ -149,8 +150,10 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
 
 void supprimerDossier(int emplacement){
     for(int i = emplacement; i < nbDossierTotal; i++){
-        if(i != nbDossierTotal-1){
-            liste[i] = liste[i+1];
+        if(nbDossierTotal < 1){
+            if(i != nbDossierTotal-1){
+                liste[i] = liste[i+1];
+            }
         }
     }
     nbDossierTotal--;
@@ -216,6 +219,8 @@ int main(int argc, char const *argv[])
     int longueurAdresse;
     int nbRecu;
     char text[100];
+    char inscription[100] = "1", desinscription[100] = "2";
+    int choix[1];
 
     //initialisation de la socket et test si elle est correcte avant de continuer
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
@@ -257,14 +262,16 @@ int main(int argc, char const *argv[])
                 } else {
                     printf("Client connecté !\n");
                     printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
-                    nbRecu = recv(fdSocketCommunication, text, 99, 0);
+                    nbRecu = recv(fdSocketCommunication, choix, 99, 0);
                     if(nbRecu > 0){
-                        text[nbRecu] = 0;
-                        printf("%s", text);
-                        if(text == "1"){
+                        choix[nbRecu] = 0;
+                        if(*choix == '1'){
                             procInscription(fdSocketCommunication);
-                        } else if(text == "2"){
+                        } else if(*choix == '2'){
                             procDesinscription(fdSocketCommunication);
+                        } else {
+                            printf("Erreur");
+                            exit(EXIT_FAILURE);
                         }
                     }
                 }
