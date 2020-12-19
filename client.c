@@ -20,9 +20,18 @@
 #define true 1 //
 #define false 0 //
 #define null NULL //null
+#define TAILLE_NO_DOSSIER 10 //taille du numero dossier
 
 //declaration des fonctions
 void procInscription(int socket);
+void procDesinscription(int socket);
+
+void procDesinscription(int socket){
+    //declaration des variables
+    char text[100], nom[30], noDossier[TAILLE_NO_DOSSIER];
+    
+
+}
 
 void procInscription(int socket){
     //declaration des variables
