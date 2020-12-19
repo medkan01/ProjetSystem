@@ -33,7 +33,7 @@ typedef struct{
 } Dossier;
 
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
-int nbDossier = 0; //variable qui donne le nombre de dossier créé
+int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
 Dossier creationDossier(char nom[20], char prenom[20]);
@@ -49,13 +49,15 @@ void toString(int n, char str[]);
 //procédure d'inscription d'un client
 void procInscription(int socket){
     //declaration des variables
-    char text[100], nom[30], prenom[30], noDoss[10];
+    char text[100], nom[30], prenom[30], str[10];
     int nbRecu = 0;
     bool nomOk = false, prenomOk = false;
     Dossier d;
+    srand(time(null));
     //démarrage de la procédure d'inscription
     printf("Inscription du client:\n");
     //attente de réception du nom de la part du client
+    printf("En attente de saisie du nom de la part du client..\n");
     while(nomOk == false){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
@@ -66,6 +68,7 @@ void procInscription(int socket){
         }
     }
     //attente de réception du prénom de la part du client
+    printf("En attente de saisie du prénom de la part du client..\n");
     while(prenomOk == false){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
@@ -75,17 +78,20 @@ void procInscription(int socket){
             prenomOk = true;
         }
     }
-    //remplissage du dossier
+    //etape de creation du dossier
+    printf("Création du dossier en cours..\n");
+    //creation du numero de dossier
     createNoDossier(d.noDossier);
+    noDossierToString(d.noDossier, str);
+    //envoi du numero de dossier au client
+    strcpy(text, str);
+    send(socket, text, strlen(text), 0);
+    //finition de la creation du dossier
     *d.nom = *nom;
     *d.prenom = *prenom;
-    //envoi du numero de dossier au client
-    noDossierToString(d.noDossier, noDoss);
-    strcpy(text, noDoss);
-    send(socket, text, strlen(text), 0);
-    //ajout du dossier à la liste + incrémentation du nombre de dossier actuel
-    liste[nbDossier] = d;
-    nbDossier++;
+    //ajout du dossier à la liste
+    liste[nbDossierTotal] = d;
+    nbDossierTotal++;
     //arret de la procédure d'inscription
     printf("Arret de la procédure d'inscription.\n\n");
 }
@@ -119,12 +125,10 @@ int randint(int bi, int bs){
 
 //creer le numero de dossier dans une table d'entier
 void createNoDossier(int n[10]){
-    srand(time(null));
     int coef = 1;
     for(int i = 0; i < 10; i++){
         n[i] = randint(0, 9);
     }
-    sleep(1); //sleep pour laisser au srand de recharger une nouvelle seed de generation, pour eviter les doublons de nombres aleatoires
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client

@@ -46,12 +46,12 @@ void procInscription(int socket){
     strcpy(text, prenom);
     send(socket, text, strlen(text), 0);
     //attente de creation de la part du serveur
-    printf("Veuillez patienter pendant la création du dossier..");
+    printf("Veuillez patienter pendant la création du dossier..\n");
     while(dossierOk == false){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
             text[nbRecu] = 0;
-            printf("Dossier numéro: %s\n", text);
+            printf("Dossier numéro: %s\n\n\n", text);
             dossierOk = true;
         }
     }
