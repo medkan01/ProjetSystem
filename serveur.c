@@ -90,7 +90,7 @@ void afficherMenuInscription(int fdSocketCommunication){
 
 //int to string
 void toString(int n, char str[]){
-    
+    sprintf(str, "%i", n);
 }
 
 //fonction menu desinscription
@@ -109,13 +109,8 @@ void menuPrincipal(){
 }
 
 //fonction de creation de dossier
-Dossier creationDossier(char nom[20], char prenom[20]){
-    Dossier d;
-    *d.nom = *nom;
-    *d.prenom = *prenom;
-    d.noDossier = numeroDossier();
-    
-    return d;
+Dossier creationDossier(char nom[], char prenom[]){
+
 }
 
 //generation d'un numero de dossier
