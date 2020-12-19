@@ -35,7 +35,26 @@ void procInscription(int fdSocket){
     printf("Veuillez saisir votre nom:\n");
     scanf("%[^\n]", nom);
     getchar();
-    //envo
+    //envoi du nom au serveur
+    strcpy(text, nom);
+    send(fdSocket, text, strlen(text), 0);
+    //saisie du prenom du client
+    printf("Veuillez saisir votre prénom:\n");
+    scanf("%[^\n]", prenom);
+    getchar();
+    //envoi du prénom au serveur
+    strcpy(text, prenom);
+    send(fdSocket, text, strlen(text), 0);
+    //attente de creation de la part du serveur
+    while(dossierOk == false){
+        nbRecu = recv(fdSocket, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Reçu: %s\n", text);
+        } else {
+            printf("Erreur");
+        }
+    }
 
 }
 
