@@ -14,7 +14,7 @@
 //declaration des constantes
 #define PORT 3000 //port de connexion
 #define MAX_BUFFER 1000 //buffer
-#define boolean int //type booleen
+#define bool int //type booleen
 #define true 1 //
 #define false 0 //
 #define MAX_PLACES 100 //nombre maximum de places
@@ -45,47 +45,12 @@ int randint(int bi, int bs);
 int numeroDossier();
 
 void afficherMenuInscription(int fdSocketCommunication){
-    //declaration des variables de travail
-    char text[100];
-    int nbRecu;
-    char nom[20], prenom[20];
-    Dossier d;
-
-    //envoi d'un signal au client pour lancer la procédur d'inscription
-    strcpy(text, "inscription");
-    send(fdSocketCommunication, text, strlen(text), 0);
-    text[nbRecu] = 0;
-    //envoi d'une demande de saisie du nom au client
-    strcpy(text, "Inscription:\nVeuillez saisir votre nom:\n");
-    send(fdSocketCommunication, text, strlen(text), 0);
-
-    //reception de la saisie
-    nbRecu = recv(fdSocketCommunication, text, 99, 0);
-    if(nbRecu > 0){
-        text[nbRecu] = 0;
-        printf("Reçu: %s\n", text);
-        //stockage du nom
-        *nom = *text;
-            //envoi d'une demande de saisie du prenom au client
-            strcpy(text, "Veuillez saisir votre prenom:\n");
-            send(fdSocketCommunication, text, strlen(text), 0);
-            nbRecu = recv(fdSocketCommunication, text, 99, 0);
-            if(nbRecu > 0){
-                text[nbRecu] = 0;
-                printf("Reçu: %s\n", text);
-                //stockage du prenom
-                *prenom = *text;
-                d = creationDossier(nom, prenom);
-                liste[nbDossier] = d;
-                nbDossier += 1;
-                char str[12];
-                sprintf(str, "%d", d.noDossier);
-                strcpy(text, str);
-                send(fdSocketCommunication, text, strlen(text), 0);
-            }
-    } else {
-        printf("Erreur");
-    }
+    //declaration des variables
+    char text[100], nom[30], prenom[30];
+    int nbRecu = 0;
+    bool nomOk = false, prenomOk = false;
+    //démarrage de la procédure d'inscription
+    
 }
 
 //fonction menu desinscription
