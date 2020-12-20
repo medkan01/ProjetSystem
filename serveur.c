@@ -170,7 +170,7 @@ void procDesinscription(int socket){
         send(socket, text, strlen(text), 0);
     }
     //arrêt de la procédure de désinscription
-    printf("Arret de la procédure d'annulation de réservation.\n");
+    printf("Arret de la procédure d'annulation de réservation.\n\n");
 }
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
@@ -197,7 +197,14 @@ void supprimerDossier(int emplacement){
 //envoi le nombre de places libres au client
 void procPlacesLibres(int socket){
     //déclaration des variables
-    
+    char text[100];
+    int nbPlacesLibres = MAX_PLACES - nbDossierTotal;
+    char str[10];
+    //envoi du nombre de places libres au client
+    sprintf(text, "%i", nbPlacesLibres);
+    send(socket, text, strlen(text), 0);
+    //arret de la précdure d'affichage du nombre de places libres
+    printf("Arret de la procédure d'affichage du nombre de places libres\n\n");
 }
 
 //main program

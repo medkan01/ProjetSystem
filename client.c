@@ -25,6 +25,7 @@
 //declaration des fonctions
 void procInscription(int socket);
 void procDesinscription(int socket);
+void procPlacesLibres(int socket);
 
 void procDesinscription(int socket){
     //declaration des variables
@@ -51,7 +52,7 @@ void procDesinscription(int socket){
         }
     }
     //arret de la procédure de désinscription
-    printf("Arret de la procédure d'annulation de dossier.\n\n");
+    printf("Retour au menu principal..\n\n");
 }
 
 void procInscription(int socket){
@@ -90,7 +91,28 @@ void procInscription(int socket){
     }
     printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n\n");
     //arret de la procédure d'inscription
-    printf("Arret de la procédure de réservation.\n\n");
+    printf("Retour au menu principal..\n\n");
+}
+
+void procPlacesLibres(int socket){
+    //déclaration des variables
+    bool procPlacesLibresOk = false;
+    int nbRecu;
+    char text[100];
+    //attente de réception du nombre de places libres
+    while(procPlacesLibresOk == false){
+        nbRecu = recv(socket, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("\nNombre de places libres actuellement: %s\n\n", text);
+            procPlacesLibresOk = true;
+        } else {
+            printf("Erreur");
+            exit(EXIT_FAILURE);
+        }
+    }
+    //arret de la procédure d'affichage du nombre de places libres
+    printf("Retour au menu principal..\n\n");
 }
 
 int main(int argc, char const *argv[])
