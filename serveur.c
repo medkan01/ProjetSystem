@@ -20,6 +20,7 @@
 #define MAX_PLACES 100 //nombre maximum de places
 #define null NULL //null
 #define TAILLE_NO_DOSSIER 10 //taille du numero dossier
+#define TAILLE_NAME 15
 
 //delcaration des structures
 typedef struct{
@@ -27,16 +28,17 @@ typedef struct{
 } Salle;
 
 typedef struct{
+    char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
+    char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
+
     char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
-    char nom[20]; //nom de la personne associée au numéro de dossier
-    char prenom[20]; //prenom de la personne associé au numéro de dossier
 } Dossier;
 
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
-Dossier creationDossier(char nom[20], char prenom[20]);
+Dossier creationDossier(char nom[TAILLE_NAME], char prenom[TAILLE_NAME]);
 void initSalle(Salle* s);
 void afficherMenuPrincipal();
 void afficherMenuDesinscription();
@@ -87,7 +89,7 @@ void procDesinscription(int socket){
 //procédure d'inscription d'un client
 void procInscription(int socket){
     //declaration des variables
-    char text[100], nom[20], prenom[20], str[TAILLE_NO_DOSSIER];
+    char text[100], nom[TAILLE_NAME], prenom[TAILLE_NAME], str[TAILLE_NO_DOSSIER];
     int nbRecu = 0;
     bool nomOk = false, prenomOk = false;
     Dossier d;
@@ -96,7 +98,6 @@ void procInscription(int socket){
     printf("Inscription du client:\n");
     //creation du numero de dossier
     createNoDossier(d.noDossier);
-    printf("Numéro de dossier: %s\n", d.noDossier);
     //attente de réception du nom de la part du client
     printf("En attente de la réception du nom de la part du client..\n");
     while(nomOk == false){
@@ -105,7 +106,6 @@ void procInscription(int socket){
             text[nbRecu] = 0;
             printf("Nom: %s\n", text);
             strcpy(d.nom, text);
-            printf("Debug : nom [%s]\n", d.nom);
             nomOk = true;
         }
     }
@@ -117,7 +117,6 @@ void procInscription(int socket){
             text[nbRecu] = 0;
             printf("Prénom: %s\n", text);
             strcpy(d.prenom, text);
-            printf("Debug : prénom [%s]\n", d.prenom);
             prenomOk = true;
         }
     }
@@ -126,7 +125,6 @@ void procInscription(int socket){
     //envoi du numero de dossier au client
     strcpy(text, d.noDossier);
     send(socket, text, strlen(text), 0);
-    printf("Debug : noDosier [%s]\n", d.noDossier);
     //ajout du dossier à la liste
     liste[nbDossierTotal] = d;
     nbDossierTotal++;
@@ -140,7 +138,6 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
     for(int i = 0; i < nbDossierTotal; i++){
         if(noDossier == liste[i].noDossier){
             return i;
-            printf("Debug\n");
         }
     }
     return -1;
@@ -167,12 +164,10 @@ int randint(int bi, int bs){
 //creer le numero de dossier dans une table d'entier
 void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
     int n[TAILLE_NO_DOSSIER];
-    int coef = 1;
     for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
         n[i] = randint(0, 9);
     }
     noDossierToString(n, noDossier);
-    printf("Debug createNoDossier : [%s]\n", noDossier);
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
