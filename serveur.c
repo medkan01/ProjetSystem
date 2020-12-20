@@ -245,13 +245,7 @@ int main(int argc, char const *argv[])
             printf("Erreur ! Listen incorrect\n");
             exit(EXIT_FAILURE);
         } else {
-            //affichage
             socklen_t tailleCoord = sizeof(coordClient);
-            /*
-            pthread_t threadAffichage;
-            pthread_create(&threadAffichage, null, null, null);
-            */
-
             while(true){
                 printf("En attente de connexion..\n");
                 //test accept
