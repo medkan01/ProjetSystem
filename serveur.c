@@ -48,6 +48,7 @@ void procInscription(int socket);
 void procDesinscription(int socket);
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
 void supprimerDossier(int emplacement);
+void afficheDossiers();
 
 //procédure de désinscription d'un client
 void procDesinscription(int socket){
@@ -65,7 +66,7 @@ void procDesinscription(int socket){
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Nom: %s\n", text);
-            *noDossier = *text;
+            strcpy(noDossier, text);
             noDossierOk = true;
         }
     }
@@ -100,7 +101,7 @@ void procInscription(int socket){
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Nom: %s\n", text);
-            *nom = *text;
+            strcpy(nom, text);
             nomOk = true;
         }
     }
@@ -111,7 +112,7 @@ void procInscription(int socket){
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Prénom: %s\n", text);
-            *prenom = *text;
+            strcpy(prenom, text);
             prenomOk = true;
         }
     }
@@ -124,8 +125,8 @@ void procInscription(int socket){
     strcpy(text, str);
     send(socket, text, strlen(text), 0);
     //finition de la creation du dossier
-    *d.nom = *nom;
-    *d.prenom = *prenom;
+    strcpy(d.nom, nom);
+    strcpy(d.prenom, prenom);
     //ajout du dossier à la liste
     liste[nbDossierTotal] = d;
     nbDossierTotal++;
@@ -159,27 +160,7 @@ void supprimerDossier(int emplacement){
     nbDossierTotal--;
 }
 
-//fonction menu desinscription
-void afficherMenuDesinscription(){
-    printf("Désinscription:\n");
-    printf("Veuillez saisir le numéro de dossier qui vous a été donné lors de l'inscription.");
-    printf("Ce numéro de dossier est composé de 10 chiffres.\n");
-}
-
-//fonction menu principal
-void menuPrincipal(){
-    printf("Bienvenue:\nVeuillez entrer le votre choix à l'aide du numéro associé à celui-ci.\n");
-    printf("1. S'inscrire\n");
-    printf("2. Se désinscrire\n");
-    printf("3. Quitter\n");
-}
-
-//fonction de creation de dossier
-Dossier creationDossier(char nom[], char prenom[]){
-
-}
-
-//retourn un numero aleatoire
+//retourne un numero aleatoire
 int randint(int bi, int bs){
     int n;
     n = rand() % (bs+1) + bi;
@@ -206,6 +187,15 @@ void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSS
 //int to string
 void toString(int n, char str[]){
     sprintf(str, "%i", n);
+}
+
+void afficheDossiers(){
+    char str[TAILLE_NO_DOSSIER];
+    printf("Dossiers actuels:\n\n");
+    for(int i = 0; i < nbDossierTotal; i++){
+        noDossierToString(liste[i].noDossier, str);
+        printf("No Dosser: %s\nNom: %s\nPrénom: %s\n", str, liste[i].nom, liste[i].prenom);
+    }
 }
 
 //main program
@@ -267,6 +257,7 @@ int main(int argc, char const *argv[])
                         choix[nbRecu] = 0;
                         if(*choix == '1'){
                             procInscription(fdSocketCommunication);
+                            afficheDossiers();
                         } else if(*choix == '2'){
                             procDesinscription(fdSocketCommunication);
                         } else {
