@@ -159,22 +159,14 @@ void procDesinscription(int socket){
     }
     //recherche du dossier à l'aide du numéro de dossier saisi
     emplacementDossier = rechercheDossier(noDossier);
-    if(emplacementDossier == -1){
-        //dossier inexistant avec le numéro saisi. La procédure sera donc stoppée.
-        printf("Le numéro de dossier est introuvable.\n");
-    } else {
-        //suppression du dossier car celui-ci est existant
-        supprimerDossier(emplacementDossier);
-        printf("Le dossier à été supprimé avec succés !\n");
-    }
-    //Arret de la procédure de désinscription
-    printf("Arret de la procédure de désincription.\n\n");
+    printf("[DEBUG] emplacement Dossier = %i\n", emplacementDossier);
 }
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
-    Dossier d;
     for(int i = 0; i < nbDossierTotal; i++){
+        printf("[DEBUG] noDossier = %s\n", noDossier);
+        printf("[DEBUG] noDossier = %s\n", liste[i].noDossier);
         if(noDossier == liste[i].noDossier){
             return i;
         }
@@ -256,6 +248,7 @@ int main(int argc, char const *argv[])
                             afficheDossiers();
                         } else if(*choix == '2'){
                             procDesinscription(fdSocketCommunication);
+                            afficheDossiers();
                         } else {
                             printf("Erreur");
                             exit(EXIT_FAILURE);
