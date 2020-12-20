@@ -65,7 +65,7 @@ void procDesinscription(int socket){
         nbRecu = recv(socket, text, 99, 0);
         if(nbRecu > 0){
             text[nbRecu] = 0;
-            printf("Nom: %s\n", text);
+            printf("No Dossier: %s\n", text);
             strcpy(noDossier, text);
             noDossierOk = true;
         }
@@ -87,13 +87,16 @@ void procDesinscription(int socket){
 //procédure d'inscription d'un client
 void procInscription(int socket){
     //declaration des variables
-    char text[100], nom[30], prenom[30], str[10];
+    char text[100], nom[20], prenom[20], str[TAILLE_NO_DOSSIER];
     int nbRecu = 0;
     bool nomOk = false, prenomOk = false;
     Dossier d;
     srand(time(null));
     //démarrage de la procédure d'inscription
     printf("Inscription du client:\n");
+    //creation du numero de dossier
+    createNoDossier(d.noDossier);
+    printf("Numéro de dossier: %s\n", d.noDossier);
     //attente de réception du nom de la part du client
     printf("En attente de la réception du nom de la part du client..\n");
     while(nomOk == false){
@@ -101,7 +104,8 @@ void procInscription(int socket){
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Nom: %s\n", text);
-            strcpy(nom, text);
+            strcpy(d.nom, text);
+            printf("Debug : nom [%s]\n", d.nom);
             nomOk = true;
         }
     }
@@ -112,21 +116,17 @@ void procInscription(int socket){
         if(nbRecu > 0){
             text[nbRecu] = 0;
             printf("Prénom: %s\n", text);
-            strcpy(prenom, text);
+            strcpy(d.prenom, text);
+            printf("Debug : prénom [%s]\n", d.prenom);
             prenomOk = true;
         }
     }
     //etape de creation du dossier
     printf("Création du dossier en cours..\n");
-    //creation du numero de dossier
-    createNoDossier(d.noDossier);
-    printf("Numéro de dossier: %s\n", d.noDossier);
     //envoi du numero de dossier au client
     strcpy(text, d.noDossier);
     send(socket, text, strlen(text), 0);
-    //finition de la creation du dossier
-    strcpy(d.nom, nom);
-    strcpy(d.prenom, prenom);
+    printf("Debug : noDosier [%s]\n", d.noDossier);
     //ajout du dossier à la liste
     liste[nbDossierTotal] = d;
     nbDossierTotal++;
@@ -172,6 +172,7 @@ void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
         n[i] = randint(0, 9);
     }
     noDossierToString(n, noDossier);
+    printf("Debug createNoDossier : [%s]\n", noDossier);
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
