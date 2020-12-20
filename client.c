@@ -88,7 +88,7 @@ void procInscription(int socket){
             exit(EXIT_FAILURE);
         }
     }
-    printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n");
+    printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n\n");
     //arret de la procédure d'inscription
     printf("Arret de la procédure d'inscription.\n\n");
 }
@@ -103,7 +103,6 @@ int main(int argc, char const *argv[])
     char text[100];
     char adresseServeur[15];
     int choix[1];
-
     //initialisation socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(fdSocket < 0){
