@@ -128,12 +128,16 @@ void toString(int n, char str[]){
 //affiche les dossiers actuellement dans la liste
 void afficheDossiers(){
     char str[TAILLE_NO_DOSSIER];
-    printf("Liste des dossiers actuels:\n");
-    for(int i = 0; i < nbDossierTotal; i++){
-        printf("\nDossier: %i\n\n", i+1);
-        printf("No Dossier: %s\n", liste[i].noDossier);
-        printf("Nom: %s\n", liste[i].nom);
-        printf("Prénom: %s\n", liste[i].prenom);
+    if(nbDossierTotal < 0){
+        printf("Liste des dossiers actuels:\n");
+        for(int i = 0; i < nbDossierTotal; i++){
+            printf("\nDossier: %i\n\n", i+1);
+            printf("No Dossier: %s\n", liste[i].noDossier);
+            printf("Nom: %s\n", liste[i].nom);
+            printf("Prénom: %s\n", liste[i].prenom);
+        }
+    } else {
+        printf("Aucun dossier actuellement.\n\n");
     }
 }
 

@@ -147,33 +147,34 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-
-            printf("Que voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles\n4.Quitter\n");
-            scanf("%i",choix);
-            getchar();
-            switch (*choix)
-            {
-            case 1:
-                strcpy(text, "1");
-                send(fdSocket, text, strlen(text), 0);
-                procInscription(fdSocket);
-                break;
-            case 2:
-                strcpy(text, "2");
-                send(fdSocket, text, strlen(text), 0);
-                procDesinscription(fdSocket);
-                break;
-            case 3:
-                strcpy(text, "3");
-                send(fdSocket, text, strlen(text), 0);
-                procPlacesLibres(fdSocket);
-                break;
-            case 4:
-                printf("Au revoir !\n\n");
-                close(fdSocket);
-                break;
-            default:
-                break;
+            while(true){
+                printf("Que voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles\n4.Quitter\n");
+                scanf("%i",choix);
+                getchar();
+                switch (*choix)
+                {
+                case 1:
+                    strcpy(text, "1");
+                    send(fdSocket, text, strlen(text), 0);
+                    procInscription(fdSocket);
+                    break;
+                case 2:
+                    strcpy(text, "2");
+                    send(fdSocket, text, strlen(text), 0);
+                    procDesinscription(fdSocket);
+                    break;
+                case 3:
+                    strcpy(text, "3");
+                    send(fdSocket, text, strlen(text), 0);
+                    procPlacesLibres(fdSocket);
+                    break;
+                case 4:
+                    printf("Au revoir !\n\n");
+                    close(fdSocket);
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
