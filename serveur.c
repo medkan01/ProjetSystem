@@ -120,10 +120,9 @@ void procInscription(int socket){
     printf("Création du dossier en cours..\n");
     //creation du numero de dossier
     createNoDossier(d.noDossier);
-    noDossierToString(d.noDossier, str);
-    printf("Numéro de dossier: %s", str);
+    printf("Numéro de dossier: %s\n", d.noDossier);
     //envoi du numero de dossier au client
-    strcpy(text, str);
+    strcpy(text, d.noDossier);
     send(socket, text, strlen(text), 0);
     //finition de la creation du dossier
     strcpy(d.nom, nom);
@@ -138,11 +137,8 @@ void procInscription(int socket){
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
     Dossier d;
-    char noDossierTest[10];
     for(int i = 0; i < nbDossierTotal; i++){
-        d = liste[i];
-        noDossierToString(d.noDossier, noDossierTest);
-        if(noDossierTest == noDossier){
+        if(noDossier == liste[i].noDossier){
             return i;
             printf("Debug\n");
         }
@@ -196,8 +192,7 @@ void afficheDossiers(){
     char str[TAILLE_NO_DOSSIER];
     printf("Dossiers actuels:\n\n");
     for(int i = 0; i < nbDossierTotal; i++){
-        noDossierToString(liste[i].noDossier, str);
-        printf("No Dossier: %s\n", str);
+        printf("No Dossier: %s\n", liste[i].noDossier);
         printf("Nom: %s\n", liste[i].nom);
         printf("Prénom: %s\n", liste[i].prenom);
     }
