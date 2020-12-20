@@ -83,6 +83,9 @@ void procInscription(int socket){
             text[nbRecu] = 0;
             printf("Dossier numéro: %s\n\n\n", text);
             dossierOk = true;
+        } else {
+            printf("Erreur");
+            exit(EXIT_FAILURE);
         }
     }
     printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n");

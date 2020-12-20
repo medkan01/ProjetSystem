@@ -27,7 +27,7 @@ typedef struct{
 } Salle;
 
 typedef struct{
-    int noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
+    char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
     char nom[20]; //nom de la personne associée au numéro de dossier
     char prenom[20]; //prenom de la personne associé au numéro de dossier
 } Dossier;
@@ -42,7 +42,7 @@ void afficherMenuPrincipal();
 void afficherMenuDesinscription();
 int randint(int bi, int bs);
 void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]);
-void createNoDossier(int n[10]);
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]);
 void toString(int n, char str[]);
 void procInscription(int socket);
 void procDesinscription(int socket);
@@ -121,6 +121,7 @@ void procInscription(int socket){
     //creation du numero de dossier
     createNoDossier(d.noDossier);
     noDossierToString(d.noDossier, str);
+    printf("Numéro de dossier: %s", str);
     //envoi du numero de dossier au client
     strcpy(text, str);
     send(socket, text, strlen(text), 0);
@@ -168,11 +169,13 @@ int randint(int bi, int bs){
 }
 
 //creer le numero de dossier dans une table d'entier
-void createNoDossier(int n[10]){
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    int n[TAILLE_NO_DOSSIER];
     int coef = 1;
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
         n[i] = randint(0, 9);
     }
+    noDossierToString(n, noDossier);
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
@@ -194,7 +197,9 @@ void afficheDossiers(){
     printf("Dossiers actuels:\n\n");
     for(int i = 0; i < nbDossierTotal; i++){
         noDossierToString(liste[i].noDossier, str);
-        printf("No Dosser: %s\nNom: %s\nPrénom: %s\n", str, liste[i].nom, liste[i].prenom);
+        printf("No Dossier: %s\n", str);
+        printf("Nom: %s\n", liste[i].nom);
+        printf("Prénom: %s\n", liste[i].prenom);
     }
 }
 
