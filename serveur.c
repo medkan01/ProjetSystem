@@ -44,8 +44,8 @@ void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
 void toString(int n, char str[]); //fini
 void procInscription(int socket); //fini
 void afficheDossiers(); //fini
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
 void procDesinscription(int socket);
-int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
 void supprimerDossier(int emplacement);
 
 //procédure d'inscription d'un client
@@ -143,7 +143,7 @@ void procDesinscription(int socket){
     char text[100], noDossier[TAILLE_NO_DOSSIER];
     int nbRecu = 0;
     bool noDossierOk = false;
-    int emplacementDossier = -1;
+    int emplacementDossier;
     //démarrage de la procédure de désinscription
     printf("Désinscription:\n");
     //Attente de réception du numéro de dossier de la part du client
@@ -162,19 +162,6 @@ void procDesinscription(int socket){
     printf("[DEBUG] emplacement Dossier = %i\n", emplacementDossier);
 }
 
-//recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
-int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
-    int emplacement = -1;
-    for(int i = 0; i < nbDossierTotal; i++){
-        printf("[DEBUG] noDossier = %s\n", noDossier);
-        printf("[DEBUG] noDossier = %s\n", liste[i].noDossier);
-        if(noDossier == liste[i].noDossier){
-            emplacement = i;
-        }
-    }
-    return emplacement;
-}
-
 void supprimerDossier(int emplacement){
     for(int i = emplacement; i < nbDossierTotal; i++){
         if(nbDossierTotal < 1){
@@ -187,6 +174,20 @@ void supprimerDossier(int emplacement){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    int emplacement = -1;
+    int test;
+    for(int i = 0; i < nbDossierTotal; i++){
+        test = strcmp(noDossier, liste[i].noDossier);
+        if(test == 0){
+            emplacement = i;
+        }
+    }
+    return emplacement;
+}
+
 //main program
 int main(int argc, char const *argv[])
 {
@@ -248,8 +249,8 @@ int main(int argc, char const *argv[])
                             procInscription(fdSocketCommunication);
                             afficheDossiers();
                         } else if(*choix == '2'){
-                            procDesinscription(fdSocketCommunication);
                             afficheDossiers();
+                            procDesinscription(fdSocketCommunication);
                         } else {
                             printf("Erreur");
                             exit(EXIT_FAILURE);
