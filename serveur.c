@@ -47,6 +47,7 @@ void afficheDossiers(); //fini
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
 void procDesinscription(int socket);
 void supprimerDossier(int emplacement);
+void procPlacesLibres(int socket);
 
 //procédure d'inscription d'un client
 void procInscription(int socket){
@@ -57,7 +58,7 @@ void procInscription(int socket){
     Dossier d;
     srand(time(null));
     //démarrage de la procédure d'inscription
-    printf("Inscription du client:\n");
+    printf("Réservation de billet du client:\n");
     //creation du numero de dossier
     createNoDossier(d.noDossier);
     //attente de réception du nom de la part du client
@@ -91,7 +92,7 @@ void procInscription(int socket){
     liste[nbDossierTotal] = d;
     nbDossierTotal++;
     //arret de la procédure d'inscription
-    printf("Arret de la procédure d'inscription.\n\n");
+    printf("Arret de la procédure de réservation.\n\n");
 }
 
 //retourne un numero aleatoire
@@ -144,7 +145,7 @@ void procDesinscription(int socket){
     bool noDossierOk = false;
     int emplacementDossier;
     //démarrage de la procédure de désinscription
-    printf("Désinscription:\n");
+    printf("Annulation de réservation:\n");
     //attente de réception du numéro de dossier de la part du client
     printf("En attente de la réception du numéro de dossier du client..\n");
     while(noDossierOk == false){
@@ -169,7 +170,7 @@ void procDesinscription(int socket){
         send(socket, text, strlen(text), 0);
     }
     //arrêt de la procédure de désinscription
-    printf("Arret de la procédure de désincription.\n");
+    printf("Arret de la procédure d'annulation de réservation.\n");
 }
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
@@ -191,6 +192,12 @@ void supprimerDossier(int emplacement){
         liste[i] = liste[i+1];
     }
     nbDossierTotal--;
+}
+
+//envoi le nombre de places libres au client
+void procPlacesLibres(int socket){
+    //déclaration des variables
+    
 }
 
 //main program
@@ -254,8 +261,11 @@ int main(int argc, char const *argv[])
                             procInscription(fdSocketCommunication);
                             afficheDossiers();
                         } else if(*choix == '2'){
-                            afficheDossiers();
                             procDesinscription(fdSocketCommunication);
+                            afficheDossiers();
+                        } else if(*choix == '3'){
+                            procPlacesLibres(fdSocketCommunication);
+                            afficheDossiers();
                         } else {
                             printf("Erreur");
                             exit(EXIT_FAILURE);
