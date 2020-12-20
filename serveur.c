@@ -249,15 +249,15 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             socklen_t tailleCoord = sizeof(coordClient);
-            while(true){
-                printf("En attente de connexion..\n");
-                //test accept
-                if((fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *) &coordClient, &tailleCoord)) == -1){
-                    printf("Erreur ! Accept incorrect\n");
-                    exit(EXIT_FAILURE);
-                } else {
-                    printf("Client connecté !\n");
-                    printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
+            printf("En attente de connexion..\n");
+            //test accept
+            if((fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *) &coordClient, &tailleCoord)) == -1){
+                printf("Erreur ! Accept incorrect\n");
+                exit(EXIT_FAILURE);
+            } else {
+                printf("Client connecté !\n");
+                printf("Adresse: %s:%d\n", inet_ntoa(coordClient.sin_addr), ntohs(coordClient.sin_port));
+                while(true){
                     nbRecu = recv(fdSocketCommunication, choix, 99, 0);
                     if(nbRecu > 0){
                         choix[nbRecu] = 0;
@@ -270,9 +270,6 @@ int main(int argc, char const *argv[])
                         } else if(*choix == '3'){
                             procPlacesLibres(fdSocketCommunication);
                             afficheDossiers();
-                        } else {
-                            printf("Erreur");
-                            exit(EXIT_FAILURE);
                         }
                     }
                 }
