@@ -30,8 +30,8 @@ typedef struct{
 typedef struct{
     char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
     char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
-
     char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
+    char bufferReset[100];
 } Dossier;
 
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
@@ -186,8 +186,9 @@ void toString(int n, char str[]){
 
 void afficheDossiers(){
     char str[TAILLE_NO_DOSSIER];
-    printf("Dossiers actuels:\n\n");
+    printf("Liste des dossiers actuels:\n");
     for(int i = 0; i < nbDossierTotal; i++){
+        printf("\nDossier: %i\n\n", i+1);
         printf("No Dossier: %s\n", liste[i].noDossier);
         printf("Nom: %s\n", liste[i].nom);
         printf("Prénom: %s\n", liste[i].prenom);
