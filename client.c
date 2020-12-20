@@ -32,7 +32,7 @@ void procDesinscription(int socket){
     int nbRecu = 0;
     bool procDesinscription = false;
     //démarrage de la procédure de désinscription
-    printf("Désinscription:\n");
+    printf("Annulation de réservation:\n");
     //saisie du numéro de dossier
     printf("Veuillez saisir votre numéro de dossier:");
     scanf("%[^\n]", noDossier);
@@ -51,7 +51,7 @@ void procDesinscription(int socket){
         }
     }
     //arret de la procédure de désinscription
-    printf("Arret de la procédure de désinscription.\n\n");
+    printf("Arret de la procédure d'annulation de dossier.\n\n");
 }
 
 void procInscription(int socket){
@@ -60,7 +60,7 @@ void procInscription(int socket){
     bool dossierOk = false;
     int nbRecu = 0;
     //démarrage de la procédure d'inscription
-    printf("Inscription:\n");
+    printf("Réservation de billet:\n");
     //saisie du nom du client
     printf("Veuillez saisir votre nom:\n");
     scanf("%[^\n]", nom);
@@ -88,9 +88,9 @@ void procInscription(int socket){
             exit(EXIT_FAILURE);
         }
     }
-    printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n");
+    printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n\n");
     //arret de la procédure d'inscription
-    printf("Arret de la procédure d'inscription.\n\n");
+    printf("Arret de la procédure de réservation.\n\n");
 }
 
 int main(int argc, char const *argv[])
@@ -103,7 +103,6 @@ int main(int argc, char const *argv[])
     char text[100];
     char adresseServeur[15];
     int choix[1];
-
     //initialisation socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(fdSocket < 0){
@@ -127,7 +126,7 @@ int main(int argc, char const *argv[])
         } else {
             printf("Connexion réussie !\n");
 
-            printf("Que voulez vous faire:\n\n1.Inscription\n2.Désinscription\n");
+            printf("Que voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles");
             scanf("%i",choix);
             getchar();
             switch (*choix)
@@ -141,6 +140,11 @@ int main(int argc, char const *argv[])
                 strcpy(text, "2");
                 send(fdSocket, text, strlen(text), 0);
                 procDesinscription(fdSocket);
+                break;
+            case 3:
+                strcpy(text, "3");
+                send(fdSocket, text, strlen(text), 0);
+                procPlacesLibres(fdSocket);
                 break;
             default:
                 break;
