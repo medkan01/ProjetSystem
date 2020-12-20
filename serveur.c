@@ -218,7 +218,6 @@ int main(int argc, char const *argv[])
     int longueurAdresse;
     int nbRecu;
     char text[100];
-    char inscription[100] = "1", desinscription[100] = "2";
     int choix[1];
 
     //initialisation de la socket et test si elle est correcte avant de continuer
