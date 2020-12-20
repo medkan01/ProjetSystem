@@ -124,6 +124,7 @@ void toString(int n, char str[]){
     sprintf(str, "%i", n);
 }
 
+//affiche les dossiers actuellement dans la liste
 void afficheDossiers(){
     char str[TAILLE_NO_DOSSIER];
     printf("Liste des dossiers actuels:\n");
@@ -135,8 +136,6 @@ void afficheDossiers(){
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 //procédure de désinscription d'un client
 void procDesinscription(int socket){
     //déclaration des variables
@@ -146,7 +145,7 @@ void procDesinscription(int socket){
     int emplacementDossier;
     //démarrage de la procédure de désinscription
     printf("Désinscription:\n");
-    //Attente de réception du numéro de dossier de la part du client
+    //attente de réception du numéro de dossier de la part du client
     printf("En attente de la réception du numéro de dossier du client..\n");
     while(noDossierOk == false){
         nbRecu = recv(socket, text, 99, 0);
@@ -159,22 +158,19 @@ void procDesinscription(int socket){
     }
     //recherche du dossier à l'aide du numéro de dossier saisi
     emplacementDossier = rechercheDossier(noDossier);
-    printf("[DEBUG] emplacement Dossier = %i\n", emplacementDossier);
+    //si le dossier n'existe pas, alors le client est prévenu Sinon, le dossier est supprimé
     if(emplacementDossier == -1){
         strcpy(text, "Le dossier saisi n'existe pas.\n");
         printf("%s\n", text);
         send(socket, text, strlen(text), 0);
+    } else {
+        supprimerDossier(emplacementDossier);
+        strcpy(text, "Le dossier a été supprimé avec succés.\n");
+        send(socket, text, strlen(text), 0);
     }
+    //arrêt de la procédure de désinscription
+    printf("Arret de la procédure de désincription.\n");
 }
-
-void supprimerDossier(int emplacement){
-    for(int i = emplacement; i < nbDossierTotal-1; i++){
-        liste[i] = liste[i+1];
-    }
-    nbDossierTotal--;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
@@ -187,6 +183,14 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
         }
     }
     return emplacement;
+}
+
+//supprime le dossier à l'emplacement entré en paramètre
+void supprimerDossier(int emplacement){
+    for(int i = emplacement; i < nbDossierTotal-1; i++){
+        liste[i] = liste[i+1];
+    }
+    nbDossierTotal--;
 }
 
 //main program
