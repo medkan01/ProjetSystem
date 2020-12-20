@@ -118,13 +118,11 @@ void procPlacesLibres(int socket){
 int main(int argc, char const *argv[])
 {
     //déclaration des variables
-    int fdSocket;
-    int nbRecu;
+    int fdSocket, nbRecu, longueurAdresse, choix[1];
     struct sockaddr_in coordServeur;
-    int longueurAdresse;
-    char text[100];
-    char adresseServeur[15];
-    int choix[1];
+    char text[100], adresseServeur[15];
+    bool connecte;
+
     //initialisation socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(fdSocket < 0){
@@ -147,7 +145,8 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-            while(true){
+            connecte = true;
+            while(connecte == true){
                 printf("Que voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles\n4.Quitter\n");
                 scanf("%i",choix);
                 getchar();
@@ -170,12 +169,13 @@ int main(int argc, char const *argv[])
                     break;
                 case 4:
                     printf("Au revoir !\n\n");
-                    close(fdSocket);
+                    connecte = false;
                     break;
                 default:
                     break;
                 }
             }
+            close(fdSocket);
         }
     }
 }
