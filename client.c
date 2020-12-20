@@ -148,7 +148,7 @@ int main(int argc, char const *argv[])
         } else {
             printf("Connexion réussie !\n");
 
-            printf("Que voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles");
+            printf("Que voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles\n4.Quitter\n");
             scanf("%i",choix);
             getchar();
             switch (*choix)
@@ -168,10 +168,13 @@ int main(int argc, char const *argv[])
                 send(fdSocket, text, strlen(text), 0);
                 procPlacesLibres(fdSocket);
                 break;
+            case 4:
+                printf("Au revoir !\n\n");
+                close(fdSocket);
+                break;
             default:
                 break;
             }
-            close(fdSocket);
         }
     }
 }
