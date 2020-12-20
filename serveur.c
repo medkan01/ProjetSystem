@@ -164,14 +164,15 @@ void procDesinscription(int socket){
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    int emplacement = -1;
     for(int i = 0; i < nbDossierTotal; i++){
         printf("[DEBUG] noDossier = %s\n", noDossier);
         printf("[DEBUG] noDossier = %s\n", liste[i].noDossier);
         if(noDossier == liste[i].noDossier){
-            return i;
+            emplacement = i;
         }
     }
-    return -1;
+    return emplacement;
 }
 
 void supprimerDossier(int emplacement){
