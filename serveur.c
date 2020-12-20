@@ -160,15 +160,16 @@ void procDesinscription(int socket){
     //recherche du dossier à l'aide du numéro de dossier saisi
     emplacementDossier = rechercheDossier(noDossier);
     printf("[DEBUG] emplacement Dossier = %i\n", emplacementDossier);
+    if(emplacementDossier == -1){
+        strcpy(text, "Le dossier saisi n'existe pas.\n");
+        printf("%s\n", text);
+        send(socket, text, strlen(text), 0);
+    }
 }
 
 void supprimerDossier(int emplacement){
-    for(int i = emplacement; i < nbDossierTotal; i++){
-        if(nbDossierTotal < 1){
-            if(i != nbDossierTotal-1){
-                liste[i] = liste[i+1];
-            }
-        }
+    for(int i = emplacement; i < nbDossierTotal-1; i++){
+        liste[i] = liste[i+1];
     }
     nbDossierTotal--;
 }
