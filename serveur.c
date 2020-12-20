@@ -38,53 +38,15 @@ Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombr
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
-Dossier creationDossier(char nom[TAILLE_NAME], char prenom[TAILLE_NAME]);
-void initSalle(Salle* s);
-void afficherMenuPrincipal();
-void afficherMenuDesinscription();
-int randint(int bi, int bs);
-void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]);
-void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]);
-void toString(int n, char str[]);
-void procInscription(int socket);
+int randint(int bi, int bs); //fini
+void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]); //fini
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
+void toString(int n, char str[]); //fini
+void procInscription(int socket); //fini
+void afficheDossiers(); //fini
 void procDesinscription(int socket);
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
 void supprimerDossier(int emplacement);
-void afficheDossiers();
-
-//procédure de désinscription d'un client
-void procDesinscription(int socket){
-    //déclaration des variables
-    char text[100], noDossier[TAILLE_NO_DOSSIER];
-    int nbRecu = 0;
-    bool noDossierOk = false;
-    int emplacementDossier = -1;
-    //démarrage de la procédure de désinscription
-    printf("Désinscription:\n");
-    //Attente de réception du numéro de dossier de la part du client
-    printf("En attente de la réception du numéro de dossier du client..\n");
-    while(noDossierOk == false){
-        nbRecu = recv(socket, text, 99, 0);
-        if(nbRecu > 0){
-            text[nbRecu] = 0;
-            printf("No Dossier: %s\n", text);
-            strcpy(noDossier, text);
-            noDossierOk = true;
-        }
-    }
-    //recherche du dossier à l'aide du numéro de dossier saisi
-    emplacementDossier = rechercheDossier(noDossier);
-    if(emplacementDossier == -1){
-        //dossier inexistant avec le numéro saisi. La procédure sera donc stoppée.
-        printf("Le numéro de dossier est introuvable.\n");
-    } else {
-        //suppression du dossier car celui-ci est existant
-        supprimerDossier(emplacementDossier);
-        printf("Le dossier à été supprimé avec succés !\n");
-    }
-    //Arret de la procédure de désinscription
-    printf("Arret de la procédure de désincription.\n\n");
-}
 
 //procédure d'inscription d'un client
 void procInscription(int socket){
@@ -132,28 +94,6 @@ void procInscription(int socket){
     printf("Arret de la procédure d'inscription.\n\n");
 }
 
-//recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
-int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
-    Dossier d;
-    for(int i = 0; i < nbDossierTotal; i++){
-        if(noDossier == liste[i].noDossier){
-            return i;
-        }
-    }
-    return -1;
-}
-
-void supprimerDossier(int emplacement){
-    for(int i = emplacement; i < nbDossierTotal; i++){
-        if(nbDossierTotal < 1){
-            if(i != nbDossierTotal-1){
-                liste[i] = liste[i+1];
-            }
-        }
-    }
-    nbDossierTotal--;
-}
-
 //retourne un numero aleatoire
 int randint(int bi, int bs){
     int n;
@@ -195,6 +135,65 @@ void afficheDossiers(){
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//procédure de désinscription d'un client
+void procDesinscription(int socket){
+    //déclaration des variables
+    char text[100], noDossier[TAILLE_NO_DOSSIER];
+    int nbRecu = 0;
+    bool noDossierOk = false;
+    int emplacementDossier = -1;
+    //démarrage de la procédure de désinscription
+    printf("Désinscription:\n");
+    //Attente de réception du numéro de dossier de la part du client
+    printf("En attente de la réception du numéro de dossier du client..\n");
+    while(noDossierOk == false){
+        nbRecu = recv(socket, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("No Dossier: %s\n", text);
+            strcpy(noDossier, text);
+            noDossierOk = true;
+        }
+    }
+    //recherche du dossier à l'aide du numéro de dossier saisi
+    emplacementDossier = rechercheDossier(noDossier);
+    if(emplacementDossier == -1){
+        //dossier inexistant avec le numéro saisi. La procédure sera donc stoppée.
+        printf("Le numéro de dossier est introuvable.\n");
+    } else {
+        //suppression du dossier car celui-ci est existant
+        supprimerDossier(emplacementDossier);
+        printf("Le dossier à été supprimé avec succés !\n");
+    }
+    //Arret de la procédure de désinscription
+    printf("Arret de la procédure de désincription.\n\n");
+}
+
+//recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    Dossier d;
+    for(int i = 0; i < nbDossierTotal; i++){
+        if(noDossier == liste[i].noDossier){
+            return i;
+        }
+    }
+    return -1;
+}
+
+void supprimerDossier(int emplacement){
+    for(int i = emplacement; i < nbDossierTotal; i++){
+        if(nbDossierTotal < 1){
+            if(i != nbDossierTotal-1){
+                liste[i] = liste[i+1];
+            }
+        }
+    }
+    nbDossierTotal--;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //main program
 int main(int argc, char const *argv[])
 {
