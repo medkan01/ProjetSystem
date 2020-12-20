@@ -31,7 +31,7 @@ typedef struct{
     char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
     char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
     char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
-    char bufferReset[100];
+    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
 } Dossier;
 
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
