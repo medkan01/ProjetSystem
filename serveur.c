@@ -34,6 +34,14 @@ typedef struct{
     char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
 } Dossier;
 
+typedef struct{
+    bool libre;
+    int range;
+    int colonne;
+} Place;
+
+Place places[MAX_PLACES];//table contenant toutes les places de la salle avec les attributs de chacune.
+
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
@@ -48,6 +56,9 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
 void procDesinscription(int socket);
 void supprimerDossier(int emplacement);
 void procPlacesLibres(int socket);
+void afficherPlaces();
+void remplissageTablePlaces();
+int noPlace(int colonne, int range);
 
 //procédure d'inscription d'un client
 void procInscription(int socket){
@@ -137,6 +148,43 @@ void afficheDossiers(){
     }
 }
 
+void remplissageTablePlaces(){
+    int range=0;
+    for(int i=0; i<MAX_PLACES;i++){
+        places[i].colonne=i%10+1;
+        if(i%10==0){
+            range++;
+            places[i].range=range;
+        }else{places[i].range=range;}
+        
+        places[i].libre=true;
+    }
+}
+
+void afficherPlaces(){
+    int range=1;
+    printf(" ");
+    for(int colonne=1;colonne<11;colonne++){printf("  %i",colonne);}
+    for(int i=0; i<MAX_PLACES;i++){
+       
+        if(i%10==0){if(range!=10){printf("\n %i",range);range++;}else{printf("\n10");}}
+        if(places[i].libre){
+            printf(" O ");
+        } else {
+            printf(" X ");}
+        
+    }
+    printf("\n");
+}
+
+int noPlace(int colonne, int range){
+    for(int i=0; i<MAX_PLACES;i++){
+        if((places[i].colonne = colonne) && (places[i].range = range)){
+            return i;
+        }    
+    }
+}
+
 //procédure de désinscription d'un client
 void procDesinscription(int socket){
     //déclaration des variables
@@ -203,8 +251,10 @@ void procPlacesLibres(int socket){
 //main program
 int main(int argc, char const *argv[])
 {
+    remplissageTablePlaces();
+    afficherPlaces();
     //déclaration des variables
-    int fdSocketAttente;
+   /* int fdSocketAttente;
     int fdSocketCommunication;
     struct sockaddr_in coordServeur;
     struct sockaddr_in coordClient;
@@ -244,7 +294,7 @@ int main(int argc, char const *argv[])
             pthread_t threadAffichage;
             pthread_create(&threadAffichage, null, null, null);
             */
-
+/*
             while(true){
                 printf("En attente de connexion..\n");
                 //test accept
@@ -277,5 +327,5 @@ int main(int argc, char const *argv[])
             close(fdSocketAttente);
             return 0;
         }
-    }
+    }*/
 }
