@@ -28,20 +28,20 @@ typedef struct{
 } Salle;
 
 typedef struct{
-    char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
-    char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
-    char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
-    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
-} Dossier;
-
-typedef struct{
     bool libre;
     int range;
     int colonne;
 } Place;
 
-Place places[MAX_PLACES];//table contenant toutes les places de la salle avec les attributs de chacune.
+typedef struct{
+    char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
+    char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
+    char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
+    Place place;
+    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
+} Dossier;
 
+Place places[MAX_PLACES];//table contenant toutes les places de la salle avec les attributs de chacune.
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
@@ -57,21 +57,22 @@ void procDesinscription(int socket);
 void supprimerDossier(int emplacement);
 void procPlacesLibres(int socket);
 void afficherPlaces();
+
 void remplissageTablePlaces();
 int noPlace(int colonne, int range);
 
 //procédure d'inscription d'un client
 void procInscription(int socket){
     //declaration des variables
-    char text[100], nom[TAILLE_NAME], prenom[TAILLE_NAME], str[TAILLE_NO_DOSSIER];
+    char text[200], nom[TAILLE_NAME], prenom[TAILLE_NAME], str[TAILLE_NO_DOSSIER];
     int nbRecu = 0;
-    bool nomOk = false, prenomOk = false;
+    bool nomOk = false, prenomOk = false, placeOk = false;
     Dossier d;
     srand(time(null));
     //démarrage de la procédure d'inscription
     printf("Réservation de billet du client:\n");
     //creation du numero de dossier
-    createNoDossier(d.noDossier);
+    //createNoDossier(d.noDossier);
     //attente de réception du nom de la part du client
     printf("En attente de la réception du nom de la part du client..\n");
     while(nomOk == false){
@@ -94,6 +95,21 @@ void procInscription(int socket){
             prenomOk = true;
         }
     }
+    //affiche les places dispo
+    places[1].libre=false;
+    send(socket, places, sizeof(places), 0);
+
+    printf("En attente de la réception de la place de la part du client..\n");
+    while(placeOk == false){
+        nbRecu = recv(socket, text, 99, 0);
+        if(nbRecu > 0){
+            text[nbRecu] = 0;
+            printf("Prénom: %s\n", text);
+            strcpy(d.prenom, text);
+            prenomOk = true;
+        }
+    }
+
     //etape de creation du dossier
     printf("Création du dossier en cours..\n");
     //envoi du numero de dossier au client
@@ -120,6 +136,23 @@ void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
         n[i] = randint(0, 9);
     }
     noDossierToString(n, noDossier);
+}
+
+void afficherPlaces(){
+    int range=1;
+    printf(" ");
+    for(int colonne=1;colonne<11;colonne++){printf("  %i",colonne);}printf(" <-X");
+    for(int i=0; i<100;i++){
+       
+        if(i%10==0){if(range!=10){printf("\n %i",range);range++;}else{printf("\n10");}}
+        if(places[i].libre){
+            printf(" O ");
+        } else {
+            printf(" X ");}
+        
+    }
+    printf("\nÎ\nY\n");
+
 }
 
 //rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
@@ -159,22 +192,6 @@ void remplissageTablePlaces(){
         
         places[i].libre=true;
     }
-}
-
-void afficherPlaces(){
-    int range=1;
-    printf(" ");
-    for(int colonne=1;colonne<11;colonne++){printf("  %i",colonne);}
-    for(int i=0; i<MAX_PLACES;i++){
-       
-        if(i%10==0){if(range!=10){printf("\n %i",range);range++;}else{printf("\n10");}}
-        if(places[i].libre){
-            printf(" O ");
-        } else {
-            printf(" X ");}
-        
-    }
-    printf("\n");
 }
 
 int noPlace(int colonne, int range){
@@ -251,10 +268,9 @@ void procPlacesLibres(int socket){
 //main program
 int main(int argc, char const *argv[])
 {
-    remplissageTablePlaces();
-    afficherPlaces();
     //déclaration des variables
-   /* int fdSocketAttente;
+    remplissageTablePlaces();
+    int fdSocketAttente;
     int fdSocketCommunication;
     struct sockaddr_in coordServeur;
     struct sockaddr_in coordClient;
@@ -294,7 +310,7 @@ int main(int argc, char const *argv[])
             pthread_t threadAffichage;
             pthread_create(&threadAffichage, null, null, null);
             */
-/*
+
             while(true){
                 printf("En attente de connexion..\n");
                 //test accept
@@ -327,5 +343,5 @@ int main(int argc, char const *argv[])
             close(fdSocketAttente);
             return 0;
         }
-    }*/
+    }
 }
