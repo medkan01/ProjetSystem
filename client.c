@@ -54,8 +54,7 @@ void afficherPlaces(){
 
 void procInscription(int socket){
     //declaration des variables
-    char text[100], nom[30], prenom[30];
-    int colonne, range;
+    char text[100], nom[30], prenom[30], colonne[20], range[20];
     bool dossierOk = false;
     int nbRecu = 0;
     //démarrage de la procédure d'inscription
@@ -82,13 +81,14 @@ void procInscription(int socket){
     scanf("%[^\n]", colonne);
     getchar();
     //envoi de la range
-    strcpy(text, prenom);
+    strcpy(text, colonne);
     send(socket, text, strlen(text), 0);
+    //choix de la range
     printf("Veuillez choisir la range(Y) de votre place:\n");
     scanf("%[^\n]", range);
     getchar();
     //envoi de la range
-    strcpy(text, prenom);
+    strcpy(text, range);
     send(socket, text, strlen(text), 0);
     //attente de creation de la part du serveur
     printf("Veuillez patienter pendant la création du dossier..\n");
