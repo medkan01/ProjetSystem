@@ -33,6 +33,7 @@ Place places[100];
 void afficherPlaces();
 void procInscription(int socket);
 void procDesinscription(int socket);
+void procPlacesLibres(int socket);
 
 void afficherPlaces(){
     int range=1;
@@ -73,18 +74,20 @@ void procInscription(int socket){
     //envoi du prénom au serveur
     strcpy(text, prenom);
     send(socket, text, strlen(text), 0);
-    //choix de la place du client
+    //affichage des places
     recv(socket, places, sizeof(places), 0);
     afficherPlaces();
+    //choix de la colonne
     printf("Veuillez choisir la colonne(X) de votre place:\n");
     scanf("%[^\n]", colonne);
     getchar();
-
+    //envoi de la range
+    strcpy(text, prenom);
+    send(socket, text, strlen(text), 0);
     printf("Veuillez choisir la range(Y) de votre place:\n");
     scanf("%[^\n]", range);
     getchar();
-
-    //envoi de la place
+    //envoi de la range
     strcpy(text, prenom);
     send(socket, text, strlen(text), 0);
     //attente de creation de la part du serveur
@@ -133,6 +136,15 @@ void procDesinscription(int socket){
     printf("Arret de la procédure d'annulation de dossier.\n\n");
 }
 
+void procPlacesLibres(int socket){
+    recv(socket, places, sizeof(places), 0);
+    int n=0;//nombre de place dispo
+    for(int i=0; i<100;i++){
+        if(places[i].libre){n++;}
+    }
+    printf("Il y a %i place(s) disponible(s).\n",n);
+}
+
 int main(int argc, char const *argv[])
 {
     //déclaration des variables
@@ -165,31 +177,32 @@ int main(int argc, char const *argv[])
             exit(EXIT_FAILURE);
         } else {
             printf("Connexion réussie !\n");
-
-            printf("Que voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles\n");
-            scanf("%i",choix);
-            getchar();
-            switch (*choix)
-            {
-            case 1:
-                strcpy(text, "1");
-                send(fdSocket, text, strlen(text), 0);
-                procInscription(fdSocket);
-                break;
-            case 2:
-                strcpy(text, "2");
-                send(fdSocket, text, strlen(text), 0);
-                procDesinscription(fdSocket);
-                break;
-            /*case 3:
-                strcpy(text, "3");
-                send(fdSocket, text, strlen(text), 0);
-                procPlacesLibres(fdSocket);
-                break;*/
-            default:
-                break;
+            while(true){
+                printf("\n\nQue voulez vous faire:\n\n1.Réserver un billet\n2.Annuler une réservation\n3.Consulter le nombre de places disponibles\n");
+                scanf("%i",choix);
+                getchar();
+                switch (*choix)
+                {
+                case 1:
+                    strcpy(text, "1");
+                    send(fdSocket, text, strlen(text), 0);
+                    procInscription(fdSocket);
+                    break;
+                case 2:
+                    strcpy(text, "2");
+                    send(fdSocket, text, strlen(text), 0);
+                    procDesinscription(fdSocket);
+                    break;
+                case 3:
+                    strcpy(text, "3");
+                    send(fdSocket, text, strlen(text), 0);
+                    procPlacesLibres(fdSocket);
+                    break;
+                default:
+                    break;
+                }
+                close(fdSocket);
             }
-            close(fdSocket);
         }
     }
 }

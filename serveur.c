@@ -95,8 +95,7 @@ void procInscription(int socket){
             prenomOk = true;
         }
     }
-    //affiche les places dispo
-    places[1].libre=false;
+    //envoi la liste des places
     send(socket, places, sizeof(places), 0);
 
     printf("En attente de la réception de la place de la part du client..\n");
@@ -261,8 +260,7 @@ void supprimerDossier(int emplacement){
 
 //envoi le nombre de places libres au client
 void procPlacesLibres(int socket){
-    //déclaration des variables
-    
+    send(socket, places, sizeof(places), 0);
 }
 
 //main program
