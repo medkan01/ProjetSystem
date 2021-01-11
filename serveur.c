@@ -68,26 +68,26 @@ int randint(int bi, int bs){
 }
 
 //creer le numero de dossier dans une table d'entier
-long createNoDossier(){
-    long n[TAILLE_NO_DOSSIER];
-    do{
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    int n[TAILLE_NO_DOSSIER];
     for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
         n[i] = randint(0, 9);
     }
-    }while(n < 0);
-    return n[TAILLE_NO_DOSSIER];
+    noDossierToString(n, noDossier);
 }
 
-void toString(int n, char str[]){
-    sprintf(str, "%i", n);
-}
-
+//rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
 void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]){
     char chiffre[1];
     for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
         toString(noDossier[i], chiffre);
         strcat(str, chiffre);
     }
+}
+
+//int to string
+void toString(int n, char str[]){
+    sprintf(str, "%i", n);
 }
 
 void afficherPlaces(){
