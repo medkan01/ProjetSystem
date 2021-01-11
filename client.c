@@ -106,10 +106,8 @@ void procInscription(int socket){
     send(socket, text, sizeof(text), 0);
     strcpy(text, prenom);
     send(socket, text, sizeof(text), 0);
-    printf("no dossier = %s\n", noDossier);
     nbRecu = recv(socket, noDossier, TAILLE_NO_DOSSIER, 0);
     noDossier[nbRecu] = 0;
-    printf("%s\n", noDossier);
     printf("numéro de Dossier : %s\n", noDossier);
     printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n\n");
     nbRecu = recv(socket, places, sizeof(places), 0);
