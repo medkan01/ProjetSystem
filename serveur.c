@@ -36,7 +36,7 @@ typedef struct{
 typedef struct{
     char nom; //nom de la personne associée au numéro de dossier
     char prenom; //prenom de la personne associé au numéro de dossier
-    char noDossier; //numéro du dossier
+    char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
     Place place;
     char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
 } Dossier;
@@ -46,9 +46,10 @@ Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombr
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
-int randint(int bi, int bs); //fini
-char createNoDossier(); //fini
-void toString(int n, char str[]); //fini
+void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]);
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]);
+void toString(int n, char str[]); 
+int randint(int bi, int bs); 
 void afficheDossiers(); //fini
 int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
 void procDesinscription(int socket);
@@ -68,19 +69,25 @@ int randint(int bi, int bs){
     return n;
 }
 
-
 //creer le numero de dossier dans une table d'entier
-char createNoDossier(){
-    char noDossier;
-    char tampon;
-    int n;
-    for(int i; i<TAILLE_NO_DOSSIER;i++){
-        n = randint(0, 9);
-        sprintf(&tampon, "%i", n);
-        strcat(&noDossier, &tampon);
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    int n[TAILLE_NO_DOSSIER];
+    for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
+        n[i] = randint(0, 9);
     }
-    printf("%s", noDossier);
-    return noDossier;
+    noDossierToString(n, noDossier);
+}
+
+void toString(int n, char str[]){
+    sprintf(str, "%i", n);
+}
+
+void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]){
+    char chiffre[1];
+    for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
+        toString(noDossier[i], chiffre);
+        strcat(str, chiffre);
+    }
 }
 
 void afficherPlaces(){
@@ -170,7 +177,7 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
     int emplacement = -1;
     int test;
     for(int i = 0; i < nbDossierTotal; i++){
-        //test = strcmp(noDossier, liste[i].noDossier);
+        test = strcmp(noDossier, liste[i].noDossier);
         if(test == 0){
             emplacement = i;
         }
@@ -263,19 +270,21 @@ int main(int argc, char const *argv[])
                             send(fdSocketCommunication, places, sizeof(places), 0);
                             //recois la liste des places
                             recv(fdSocketCommunication, &nPlace, sizeof(nPlace), 0);
+                            //recois le nom et le prenom
                             recv(fdSocketCommunication, &nomCl, sizeof(nomCl), 0);
                             recv(fdSocketCommunication, &prenomCl, sizeof(prenomCl), 0);
+                            //reserve la place que le client à choisis
                             reservePlace(nPlace);
-                            d.nom=nomCl;
-                            d.prenom=prenomCl;
-                            d.place=places[nPlace];
-                            d.noDossier=createNoDossier();
+                            //créer le dossier du client
+                            d.nom = nomCl;
+                            d.prenom = prenomCl;
+                            d.place = places[nPlace];
+                            createNoDossier(d.noDossier);
+                            ajoutDossier(d);
                         } else if(*choix == '2'){
                             
-                            
                         } else if(*choix == '3'){
-                            procPlacesLibres(fdSocketCommunication);
-                            afficheDossiers();
+
                         } else {
                             printf("Erreur d'interprétation de demande\n");
                             exit(EXIT_FAILURE);
