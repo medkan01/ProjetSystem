@@ -263,6 +263,7 @@ int main(int argc, char const *argv[])
                             d.prenom = prenomCl;
                             d.place = places[nPlace];
                             d.noDossier = createNoDossier();
+                            printf(d.noDossier);
                             ajoutDossier(d);
                             send(fdSocketCommunication, &d.noDossier, sizeof(d.noDossier), 0);
                         } else if(*choix == '2'){
