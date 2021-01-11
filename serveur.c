@@ -36,7 +36,7 @@ typedef struct{
 typedef struct{
     char nom; //nom de la personne associée au numéro de dossier
     char prenom; //prenom de la personne associé au numéro de dossier
-    char noDossier[10]; //numéro du dossier
+    char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
     Place place;
     char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
 } Dossier;
@@ -90,7 +90,6 @@ void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSS
 void toString(int n, char str[]){
     sprintf(str, "%i", n);
 }
-
 
 void afficherPlaces(){
     int range=1;
@@ -203,6 +202,7 @@ int main(int argc, char const *argv[])
     int noDossier; // numero de dossier du client qui veux se desinscrire
     int nPlace; //numero de la place reserver par le client
     Dossier d;
+    srand(time(null));
     char nomCl, prenomCl;
     char text[100];
     int choix[20];
@@ -265,7 +265,7 @@ int main(int argc, char const *argv[])
                             d.nom = nomCl;
                             d.prenom = prenomCl;
                             d.place = places[nPlace];
-                            createNoDossier( d.noDossier );
+                            createNoDossier(d.noDossier);
                             ajoutDossier(d);
                             send(fdSocketCommunication, &d.noDossier, sizeof(d.noDossier), 0);
                         } else if(*choix == '2'){
