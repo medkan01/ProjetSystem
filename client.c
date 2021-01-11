@@ -112,6 +112,7 @@ void procInscription(int socket){
     printf("%s\n", noDossier);
     printf("numéro de Dossier : %s\n", noDossier);
     printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n\n");
+    nbRecu = recv(socket, places, sizeof(places), 0);
     //arret de la procédure d'inscription
     printf("Arret de la procédure de réservation.\n\n");
 }
@@ -133,12 +134,13 @@ void procDesinscription(int socket){
     nbRecu = recv(socket, text, 99,0);
     text[nbRecu] = 0;
     printf("%s",text);
+    nbRecu = recv(socket, places, sizeof(places), 0);
     //arret de la procédure de désinscription
     printf("Arret de la procédure d'annulation de dossier.\n\n");
 }
 
 void procPlacesLibres(int socket){
-    send(socket, "1", strlen("1"), 0);
+    send(socket, "3", 1, 0);
     recv(socket, places, sizeof(places), 0);
     int n=0;//nombre de place dispo
     for(int i=0; i<100;i++){

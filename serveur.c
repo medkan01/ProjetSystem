@@ -85,10 +85,9 @@ void procInscription(int socket){
     strcpy(d.nom, nom);
     strcpy(d.prenom, prenom);
     strcpy(d.noDossier, noDossier);
-    printf("[DEBUG] nbDossier: [%i]\n", nbDossierTotal);
     d.place = places[nPlace];
     ajoutDossier(d);
-    printf("[DEBUG] nbDossier: [%i]\n", nbDossierTotal);
+    send(socket, places, sizeof(places), 0);
 }
 
 //procédure de désinscription d'un client
@@ -108,6 +107,7 @@ void procDesinscription(int socket){
         strcpy(text, "La réservation du dossier à été annulé.\n");
         send(socket, text, sizeof(text), 0);
     }
+    send(socket, places, sizeof(places), 0);
 }
 
 int randint(int bi, int bs){
@@ -206,6 +206,7 @@ void supprimerDossier(int emplacement){
         liste[i] = liste[i+1];
     }
     nbDossierTotal--;
+
 }
 
 void ajoutDossier(Dossier d){
@@ -284,7 +285,7 @@ int main(int argc, char const *argv[])
                         } else if(*choix == '2'){
                             procDesinscription(fdSocketCommunication);
                         } else if(*choix == '3'){
-
+                            procPlacesLibres(fdSocketCommunication);
                         } else {
                             printf("Erreur d'interprétation de demande\n");
                             exit(EXIT_FAILURE);
