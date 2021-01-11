@@ -51,7 +51,7 @@ void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSS
 void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
 void toString(int n, char str[]); //fini
 void afficheDossiers(); 
-int rechercheDossier(int noDossier, char nomCl);
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
 void procDesinscription(int socket, int noDossier, char nomCl);
 void supprimerDossier(int emplacement);
 void procPlacesLibres(int socket);
@@ -145,7 +145,7 @@ void procDesinscription(int socket, int noDossier, char nomCl){
     int emplacementDossier;
     //recherche du dossier à l'aide du numéro de dossier saisi
     printf("%i %s", noDossier, nomCl);
-    emplacementDossier = rechercheDossier(noDossier, nomCl);
+    //emplacementDossier = rechercheDossier(noDossier);
     //si le dossier n'existe pas, alors le client est prévenu Sinon, le dossier est supprimé
     if(emplacementDossier == -1){
         strcpy(text, "Le dossier saisi n'existe pas.\n");
@@ -158,10 +158,12 @@ void procDesinscription(int socket, int noDossier, char nomCl){
 }
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
-int rechercheDossier(int noDossier, char nomCl){
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
     int emplacement = -1;
+    int test;
     for(int i = 0; i < nbDossierTotal; i++){
-        if((noDossier == liste[i].noDossier)&&(nomCl == liste[i].noDossier)){
+        test = strcmp(noDossier, liste[i].noDossier);
+        if(test == 0){
             emplacement = i;
         }
     }
@@ -177,7 +179,6 @@ void supprimerDossier(int emplacement){
 }
 
 void ajoutDossier(Dossier d){
-    liste[nbDossierTotal].noDossier=d.noDossier;
     liste[nbDossierTotal].nom = d.nom;
     liste[nbDossierTotal].prenom=d.prenom;
     liste[nbDossierTotal].place=d.place;
