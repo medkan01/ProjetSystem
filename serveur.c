@@ -36,9 +36,10 @@ typedef struct{
 typedef struct{
     char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
     char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
+    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
     char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
     Place place;
-    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
+    
 } Dossier;
 
 Place places[MAX_PLACES];//table contenant toutes les places de la salle avec les attributs de chacune.
@@ -61,6 +62,33 @@ void ajoutDossier(Dossier d);
 void afficherDossier();
 void remplissageTablePlaces();
 int noPlace(int colonne, int range);
+
+void procInscription(int socket){
+    //déclaration des variables
+    int nPlace;
+    char prenom[TAILLE_NAME], nom[TAILLE_NAME], text[100];
+    Dossier d;
+    //envoi de la liste des places
+    send(socket, places, sizeof(places), 0);
+    //recois la liste des places
+    recv(socket, &nPlace, 100, 0);
+    //recois le nom et le prenom
+    recv(socket, nom, sizeof(nom), 0);
+    recv(socket, prenom, sizeof(prenom), 0);
+    //reserve la place que le client à choisis
+    reservePlace(nPlace);
+    //créer le dossier du client
+    strcpy(d.nom, nom);
+    strcpy(d.prenom, prenom);
+    d.place = places[nPlace];
+    srand(time(null));
+    createNoDossier(d.noDossier);
+    ajoutDossier(d);
+    printf("[DEBUG] n : [%s]\n", d.noDossier);
+    strcpy(text, d.noDossier);
+    printf("[DEBUG] text : [%s]\n", text);
+    send(socket, text, sizeof(d.noDossier), 0);
+}
 
 int randint(int bi, int bs){
     int n;
@@ -250,23 +278,7 @@ int main(int argc, char const *argv[])
                     if(demande > 0){
                         choix[demande] = 0;
                         if(*choix == '1'){
-                            //envoi de la liste des places
-                            send(fdSocketCommunication, places, sizeof(places), 0);
-                            //recois la liste des places
-                            recv(fdSocketCommunication, &nPlace, sizeof(nPlace), 0);
-                            //recois le nom et le prenom
-                            recv(fdSocketCommunication, &nomCl, sizeof(nomCl), 0);
-                            recv(fdSocketCommunication, &prenomCl, sizeof(prenomCl), 0);
-                            //reserve la place que le client à choisis
-                            reservePlace(nPlace);
-                            //créer le dossier du client
-                            *d.nom = nomCl;
-                            *d.prenom = prenomCl;
-                            d.place = places[nPlace];
-                            srand(time(null));
-                            createNoDossier(d.noDossier);
-                            ajoutDossier(d);
-                            send(fdSocketCommunication, &d.noDossier, sizeof(d.noDossier), 0);
+                            procInscription(fdSocketCommunication);
                         } /*else if(*choix == '2'){
                             //recois le numero de dossier et le nom du client
                             recv(fdSocketCommunication, &noDossier, sizeof(noDossier), 0);
