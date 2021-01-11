@@ -61,6 +61,7 @@ void ajoutDossier(Dossier d);
 void afficherDossier();
 void remplissageTablePlaces();
 int noPlace(int colonne, int range);
+int noPlace(int colonne, int range);
 
 void procInscription(int socket){
     //déclaration des variables
@@ -202,11 +203,20 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
 
 //supprime le dossier à l'emplacement entré en paramètre
 void supprimerDossier(int emplacement){
+    places[noPlace(liste[emplacement].place.colonne,liste[emplacement].place.range)].libre=true;
     for(int i = emplacement; i < nbDossierTotal-1; i++){
         liste[i] = liste[i+1];
     }
     nbDossierTotal--;
 
+}
+
+int noPlace(int colonne, int range){
+    for(int i=0; i<100;i++){
+        if((places[i].colonne == colonne) && (places[i].range == range)){
+            return i;
+        }
+    }
 }
 
 void ajoutDossier(Dossier d){
