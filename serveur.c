@@ -36,7 +36,7 @@ typedef struct{
 typedef struct{
     char nom; //nom de la personne associée au numéro de dossier
     char prenom; //prenom de la personne associé au numéro de dossier
-    long noDossier; //numéro du dossier
+    char noDossier[10]; //numéro du dossier
     Place place;
     char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
 } Dossier;
@@ -46,8 +46,10 @@ Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombr
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
-long createNoDossier();
-int randint(int bi, int bs); 
+int randint(int bi, int bs); //fini
+void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]); //fini
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
+void toString(int n, char str[]); //fini
 void afficheDossiers(); 
 int rechercheDossier(int noDossier, char nomCl);
 void procDesinscription(int socket, int noDossier, char nomCl);
@@ -60,7 +62,6 @@ void afficherDossier();
 void remplissageTablePlaces();
 int noPlace(int colonne, int range);
 
-//retourne un numero aleatoire
 int randint(int bi, int bs){
     int n;
     n = rand() % (bs+1) + bi;
@@ -68,20 +69,15 @@ int randint(int bi, int bs){
 }
 
 //creer le numero de dossier dans une table d'entier
-long createNoDossier(){
-    long n[TAILLE_NO_DOSSIER];
-    do{
+void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
+    int n[TAILLE_NO_DOSSIER];
     for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
         n[i] = randint(0, 9);
     }
-    }while(n < 0);
-    return n[TAILLE_NO_DOSSIER];
+    noDossierToString(n, noDossier);
 }
 
-void toString(int n, char str[]){
-    sprintf(str, "%i", n);
-}
-
+//rempli une chaine de caractere avec les numeros du dossier pour faciliter l'envoie du numero au client
 void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]){
     char chiffre[1];
     for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
@@ -89,6 +85,12 @@ void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSS
         strcat(str, chiffre);
     }
 }
+
+//int to string
+void toString(int n, char str[]){
+    sprintf(str, "%i", n);
+}
+
 
 void afficherPlaces(){
     int range=1;
@@ -262,7 +264,7 @@ int main(int argc, char const *argv[])
                             d.nom = nomCl;
                             d.prenom = prenomCl;
                             d.place = places[nPlace];
-                            d.noDossier = createNoDossier();
+                            createNoDossier( d.noDossier );
                             ajoutDossier(d);
                             send(fdSocketCommunication, &d.noDossier, sizeof(d.noDossier), 0);
                         } else if(*choix == '2'){
