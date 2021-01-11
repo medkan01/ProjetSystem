@@ -36,7 +36,7 @@ typedef struct{
 typedef struct{
     char nom; //nom de la personne associée au numéro de dossier
     char prenom; //prenom de la personne associé au numéro de dossier
-    char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
+    long noDossier; //numéro du dossier
     Place place;
     char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
 } Dossier;
@@ -46,13 +46,11 @@ Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombr
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
 //declaration des fonctions
-void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]);
-void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]);
-void toString(int n, char str[]); 
+long createNoDossier();
 int randint(int bi, int bs); 
-void afficheDossiers(); //fini
-int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
-void procDesinscription(int socket);
+void afficheDossiers(); 
+int rechercheDossier(int noDossier, char nomCl);
+void procDesinscription(int socket, int noDossier, char nomCl);
 void supprimerDossier(int emplacement);
 void procPlacesLibres(int socket);
 void afficherPlaces();
@@ -70,12 +68,14 @@ int randint(int bi, int bs){
 }
 
 //creer le numero de dossier dans une table d'entier
-void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]){
-    int n[TAILLE_NO_DOSSIER];
+long createNoDossier(){
+    long n[TAILLE_NO_DOSSIER];
+    do{
     for(int i = 0; i < TAILLE_NO_DOSSIER; i++){
         n[i] = randint(0, 9);
     }
-    noDossierToString(n, noDossier);
+    }while(n < 0);
+    return n[TAILLE_NO_DOSSIER];
 }
 
 void toString(int n, char str[]){
@@ -137,48 +137,29 @@ void reservePlace(int nPlace){
 }
 
 //procédure de désinscription d'un client
-void procDesinscription(int socket){
+void procDesinscription(int socket, int noDossier, char nomCl){
     //déclaration des variables
-    char text[100], noDossier[TAILLE_NO_DOSSIER];
-    int nbRecu = 0;
-    bool noDossierOk = false;
+    char text[100];
     int emplacementDossier;
-    //démarrage de la procédure de désinscription
-    printf("Annulation de réservation:\n");
-    //attente de réception du numéro de dossier de la part du client
-    printf("En attente de la réception du numéro de dossier du client..\n");
-    while(noDossierOk == false){
-        nbRecu = recv(socket, text, 99, 0);
-        if(nbRecu > 0){
-            text[nbRecu] = 0;
-            printf("No Dossier: %s\n", text);
-            strcpy(noDossier, text);
-            noDossierOk = true;
-        }
-    }
     //recherche du dossier à l'aide du numéro de dossier saisi
-    emplacementDossier = rechercheDossier(noDossier);
+    printf("%i %s", noDossier, nomCl);
+    emplacementDossier = rechercheDossier(noDossier, nomCl);
     //si le dossier n'existe pas, alors le client est prévenu Sinon, le dossier est supprimé
     if(emplacementDossier == -1){
         strcpy(text, "Le dossier saisi n'existe pas.\n");
-        printf("%s\n", text);
         send(socket, text, strlen(text), 0);
     } else {
         supprimerDossier(emplacementDossier);
         strcpy(text, "Le dossier a été supprimé avec succés.\n");
         send(socket, text, strlen(text), 0);
     }
-    //arrêt de la procédure de désinscription
-    printf("Arret de la procédure d'annulation de réservation.\n");
 }
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
-int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
+int rechercheDossier(int noDossier, char nomCl){
     int emplacement = -1;
-    int test;
     for(int i = 0; i < nbDossierTotal; i++){
-        test = strcmp(noDossier, liste[i].noDossier);
-        if(test == 0){
+        if((noDossier == liste[i].noDossier)&&(nomCl == liste[i].noDossier)){
             emplacement = i;
         }
     }
@@ -194,6 +175,7 @@ void supprimerDossier(int emplacement){
 }
 
 void ajoutDossier(Dossier d){
+    liste[nbDossierTotal].noDossier=d.noDossier;
     liste[nbDossierTotal].nom = d.nom;
     liste[nbDossierTotal].prenom=d.prenom;
     liste[nbDossierTotal].place=d.place;
@@ -215,6 +197,7 @@ int main(int argc, char const *argv[])
     struct sockaddr_in coordClient;
     int longueurAdresse;
     int demande;
+    int noDossier; // numero de dossier du client qui veux se desinscrire
     int nPlace; //numero de la place reserver par le client
     Dossier d;
     char nomCl, prenomCl;
@@ -279,10 +262,14 @@ int main(int argc, char const *argv[])
                             d.nom = nomCl;
                             d.prenom = prenomCl;
                             d.place = places[nPlace];
-                            createNoDossier(d.noDossier);
+                            d.noDossier = createNoDossier();
                             ajoutDossier(d);
+                            send(fdSocketCommunication, &d.noDossier, sizeof(d.noDossier), 0);
                         } else if(*choix == '2'){
-                            
+                            //recois le numero de dossier et le nom du client
+                            recv(fdSocketCommunication, &noDossier, sizeof(noDossier), 0);
+                            recv(fdSocketCommunication, &nomCl, sizeof(nomCl), 0);
+                            procDesinscription(fdSocketCommunication, noDossier, nomCl);
                         } else if(*choix == '3'){
 
                         } else {

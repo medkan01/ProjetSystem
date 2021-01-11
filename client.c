@@ -76,11 +76,11 @@ void procInscription(int socket){
     char nom[30], prenom[30];
     char text[100];
     bool dossierOk = false, placeOk = false;
-    int nbRecu = 0, colonne, range, nPlace;
+    int nbRecu = 0, colonne, range, nPlace, noDossier;
     //démarrage de la procédure d'inscription
     printf("Réservation de billet:\n");
     //saisie du nom du client
-    printf("Veuillez saisir votre nom:\n");
+    printf("Veuillez saisir votre nom en majuscule:\n");
     scanf("%s",&nom);
     getchar();
     //saisie du prenom du client
@@ -115,9 +115,8 @@ void procInscription(int socket){
     send(socket, text, sizeof(text), 0);
     strcpy(text, prenom);
     send(socket, text, sizeof(text), 0);
-    
-
-    
+    recv(socket, &noDossier, sizeof(noDossier), 0);
+    printf("numéro de Dossier : %i\n", noDossier);
     printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n\n");
     //arret de la procédure d'inscription
     printf("Arret de la procédure de réservation.\n\n");
@@ -125,28 +124,27 @@ void procInscription(int socket){
 
 void procDesinscription(int socket){
     //declaration des variables
-    char text[100], noDossier[TAILLE_NO_DOSSIER];
-    int nbRecu = 0;
-    bool procDesinscription = false;
+    char text[100], nom[30];
+    int nbRecu = 0, noDossier;
     //démarrage de la procédure de désinscription
     printf("Annulation de réservation:\n");
+    //saisie du nom
+    printf("Veuillez saisir votre nom en majuscule:\n");
+    scanf("%s", nom);
+    getchar();
     //saisie du numéro de dossier
-    printf("Veuillez saisir votre numéro de dossier:");
-    scanf("%[^\n]", noDossier);
+    printf("Veuillez saisir votre numéro de dossier:\n");
+    scanf("%i", noDossier);
     getchar();
     //envoi du numéro de dossier au serveur
-    strcpy(text, noDossier);
-    send(socket, text, strlen(text), 0);
+    send(socket, "2", 1, 0);
+    //send(socket, &noDossier, sizeof(noDossier), 0);
+    strcpy(text, nom);
+    //send(socket, text, sizeof(text), 0);
     //suppression du dossier
     printf("En attente de suppression du dossier..\n");
-    while(procDesinscription == false){
-        nbRecu = recv(socket, text, 99, 0);
-        if(nbRecu > 0){
-            text[nbRecu] = 0;
-            printf("%s\n", text);
-            procDesinscription = true;
-        }
-    }
+    recv(socket, text, 99,0);
+    printf("%s",text);
     //arret de la procédure de désinscription
     printf("Arret de la procédure d'annulation de dossier.\n\n");
 }
@@ -158,7 +156,8 @@ void procPlacesLibres(int socket){
     for(int i=0; i<100;i++){
         if(places[i].libre){n++;}
     }
-    printf("Il y a %i place(s) disponible(s).\n",n);
+    printf("Il y a %i place(s) disponible(s).\n\n\n",n);
+    afficherPlaces();
 }
 
 bool verifPlaceDispo(int colonne, int range){
