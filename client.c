@@ -29,15 +29,6 @@ typedef struct{
 } Place;
 Place places[100];
 
-typedef struct{
-    char nom; //nom de la personne associée au numéro de dossier
-    char prenom; //prenom de la personne associé au numéro de dossier
-    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
-    char noDossier[10]; //numéro du dossier
-    Place place;
-    
-} Dossier;
-
 //declaration des fonctions
 void afficherPlaces();
 void procInscription(int socket);
@@ -115,7 +106,10 @@ void procInscription(int socket){
     send(socket, text, sizeof(text), 0);
     strcpy(text, prenom);
     send(socket, text, sizeof(text), 0);
-    recv(socket, noDossier, TAILLE_NO_DOSSIER, 0);
+    printf("no dossier = %s\n", noDossier);
+    int n = recv(socket, noDossier, TAILLE_NO_DOSSIER, 0);
+    noDossier[n] = 0;
+    printf("%s\n", noDossier);
     printf("numéro de Dossier : %s\n", noDossier);
     printf("Attention ! Notez bien ce numéro de dossier.\nIl pourrait être demandé plus tard.\n\n");
     //arret de la procédure d'inscription

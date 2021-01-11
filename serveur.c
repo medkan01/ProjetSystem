@@ -36,10 +36,9 @@ typedef struct{
 typedef struct{
     char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
     char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
-    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
     char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
+    char bufferReset[100];
     Place place;
-    
 } Dossier;
 
 Place places[MAX_PLACES];//table contenant toutes les places de la salle avec les attributs de chacune.
@@ -66,28 +65,28 @@ int noPlace(int colonne, int range);
 void procInscription(int socket){
     //déclaration des variables
     int nPlace;
-    char prenom[TAILLE_NAME], nom[TAILLE_NAME], text[100];
+    char prenom[TAILLE_NAME], nom[TAILLE_NAME], text[100], noDossier[TAILLE_NO_DOSSIER];
     Dossier d;
+    srand(time(null));
     //envoi de la liste des places
     send(socket, places, sizeof(places), 0);
     //recois la liste des places
-    recv(socket, &nPlace, 100, 0);
+    recv(socket, &nPlace, sizeof(nPlace), 0);
     //recois le nom et le prenom
     recv(socket, nom, sizeof(nom), 0);
     recv(socket, prenom, sizeof(prenom), 0);
     //reserve la place que le client à choisis
     reservePlace(nPlace);
     //créer le dossier du client
+    printf("debug 81 : [%s]\n", noDossier);
+    createNoDossier(noDossier);
+    send(socket, noDossier, sizeof(noDossier), 0);
     strcpy(d.nom, nom);
     strcpy(d.prenom, prenom);
+    strcpy(d.noDossier, noDossier);
     d.place = places[nPlace];
-    srand(time(null));
-    createNoDossier(d.noDossier);
     ajoutDossier(d);
-    printf("[DEBUG] n : [%s]\n", d.noDossier);
-    strcpy(text, d.noDossier);
-    printf("[DEBUG] text : [%s]\n", text);
-    send(socket, text, sizeof(d.noDossier), 0);
+    printf("[DEBUG] text : [%s]\n", d.noDossier);
 }
 
 int randint(int bi, int bs){
