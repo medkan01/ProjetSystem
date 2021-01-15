@@ -28,12 +28,20 @@ typedef struct{
 } Salle;
 
 typedef struct{
+    bool libre;
+    int range;
+    int colonne;
+} Place;
+
+typedef struct{
     char nom[TAILLE_NAME]; //nom de la personne associée au numéro de dossier
     char prenom[TAILLE_NAME]; //prenom de la personne associé au numéro de dossier
     char noDossier[TAILLE_NO_DOSSIER]; //numéro du dossier
-    char bufferReset[100]; //cette variable permet au buffer de se reset car sinon le nom du dossier [n+1] se concatene au numéro de dossier [n]
+    char bufferReset[100];
+    Place place;
 } Dossier;
 
+Place places[MAX_PLACES];//table contenant toutes les places de la salle avec les attributs de chacune.
 Dossier liste[MAX_PLACES]; //creation d'une liste des dossiers, et donc du nombre de place dispo.
 int nbDossierTotal = 0; //variable qui donne le nombre de dossier créé
 
@@ -42,60 +50,67 @@ int randint(int bi, int bs); //fini
 void noDossierToString(int noDossier[TAILLE_NO_DOSSIER], char str[TAILLE_NO_DOSSIER]); //fini
 void createNoDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
 void toString(int n, char str[]); //fini
-void procInscription(int socket); //fini
-void afficheDossiers(); //fini
-int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]); //fini
+void afficheDossiers(); 
+int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]);
 void procDesinscription(int socket);
 void supprimerDossier(int emplacement);
 void procPlacesLibres(int socket);
+void afficherPlaces();
+void reservePlace(int nPlace);
+void ajoutDossier(Dossier d);
+void afficherDossier();
+void remplissageTablePlaces();
+int noPlace(int colonne, int range);
+int noPlace(int colonne, int range);
 
-//procédure d'inscription d'un client
 void procInscription(int socket){
-    //declaration des variables
-    char text[100], nom[TAILLE_NAME], prenom[TAILLE_NAME], str[TAILLE_NO_DOSSIER];
-    int nbRecu = 0;
-    bool nomOk = false, prenomOk = false;
+    //déclaration des variables
+    int nPlace, nbRecu;
+    char prenom[TAILLE_NAME], nom[TAILLE_NAME], text[100], noDossier[TAILLE_NO_DOSSIER];
     Dossier d;
     srand(time(null));
-    //démarrage de la procédure d'inscription
-    printf("Réservation de billet du client:\n");
-    //creation du numero de dossier
-    createNoDossier(d.noDossier);
-    //attente de réception du nom de la part du client
-    printf("En attente de la réception du nom de la part du client..\n");
-    while(nomOk == false){
-        nbRecu = recv(socket, text, 99, 0);
-        if(nbRecu > 0){
-            text[nbRecu] = 0;
-            printf("Nom: %s\n", text);
-            strcpy(d.nom, text);
-            nomOk = true;
-        }
-    }
-    //attente de réception du prénom de la part du client
-    printf("En attente de la réception du prénom de la part du client..\n");
-    while(prenomOk == false){
-        nbRecu = recv(socket, text, 99, 0);
-        if(nbRecu > 0){
-            text[nbRecu] = 0;
-            printf("Prénom: %s\n", text);
-            strcpy(d.prenom, text);
-            prenomOk = true;
-        }
-    }
-    //etape de creation du dossier
-    printf("Création du dossier en cours..\n");
-    //envoi du numero de dossier au client
-    strcpy(text, d.noDossier);
-    send(socket, text, strlen(text), 0);
-    //ajout du dossier à la liste
-    liste[nbDossierTotal] = d;
-    nbDossierTotal++;
-    //arret de la procédure d'inscription
-    printf("Arret de la procédure de réservation.\n\n");
+    //envoi de la liste des places
+    send(socket, places, sizeof(places), 0);
+    //recois la liste des places
+    nbRecu = recv(socket, &nPlace, sizeof(nPlace), 0);
+    //recois le nom et le prenom
+    nbRecu = recv(socket, nom, sizeof(nom), 0);
+    nom[nbRecu] = 0;
+    nbRecu = recv(socket, prenom, sizeof(prenom), 0);
+    prenom[nbRecu] = 0;
+    //reserve la place que le client à choisis
+    reservePlace(nPlace);
+    //créer le dossier du client
+    createNoDossier(noDossier);
+    send(socket, noDossier, sizeof(noDossier), 0);
+    strcpy(d.nom, nom);
+    strcpy(d.prenom, prenom);
+    strcpy(d.noDossier, noDossier);
+    d.place = places[nPlace];
+    ajoutDossier(d);
+    send(socket, places, sizeof(places), 0);
 }
 
-//retourne un numero aleatoire
+//procédure de désinscription d'un client
+void procDesinscription(int socket){
+    //déclaration des variables
+    char text[100], nom[TAILLE_NAME], noDossier[TAILLE_NO_DOSSIER];
+    int emplacementDossier, nbRecu;
+    //reception du numéro de dossier
+    nbRecu = recv(socket, noDossier, sizeof(noDossier), 0);
+    noDossier[nbRecu] = 0;
+    emplacementDossier = rechercheDossier(noDossier);
+    if(emplacementDossier == -1){
+        strcpy(text, "Le nom ou le numéro de dossier est incorect.\n");
+        send(socket, text, sizeof(text), 0);
+    } else {
+        supprimerDossier(emplacementDossier);
+        strcpy(text, "La réservation du dossier à été annulé.\n");
+        send(socket, text, sizeof(text), 0);
+    }
+    send(socket, places, sizeof(places), 0);
+}
+
 int randint(int bi, int bs){
     int n;
     n = rand() % (bs+1) + bi;
@@ -125,6 +140,23 @@ void toString(int n, char str[]){
     sprintf(str, "%i", n);
 }
 
+void afficherPlaces(){
+    int range=1;
+    printf(" ");
+    for(int colonne=1;colonne<11;colonne++){printf("  %i",colonne);}printf(" <-X");
+    for(int i=0; i<100;i++){
+       
+        if(i%10==0){if(range!=10){printf("\n %i",range);range++;}else{printf("\n10");}}
+        if(places[i].libre){
+            printf(" O ");
+        } else {
+            printf(" X ");}
+        
+    }
+    printf("\nÎ\nY\n");
+
+}
+
 //affiche les dossiers actuellement dans la liste
 void afficheDossiers(){
     char str[TAILLE_NO_DOSSIER];
@@ -137,40 +169,21 @@ void afficheDossiers(){
     }
 }
 
-//procédure de désinscription d'un client
-void procDesinscription(int socket){
-    //déclaration des variables
-    char text[100], noDossier[TAILLE_NO_DOSSIER];
-    int nbRecu = 0;
-    bool noDossierOk = false;
-    int emplacementDossier;
-    //démarrage de la procédure de désinscription
-    printf("Annulation de réservation:\n");
-    //attente de réception du numéro de dossier de la part du client
-    printf("En attente de la réception du numéro de dossier du client..\n");
-    while(noDossierOk == false){
-        nbRecu = recv(socket, text, 99, 0);
-        if(nbRecu > 0){
-            text[nbRecu] = 0;
-            printf("No Dossier: %s\n", text);
-            strcpy(noDossier, text);
-            noDossierOk = true;
-        }
+void remplissageTablePlaces(){
+    int range=0;
+    for(int i=0; i<MAX_PLACES;i++){
+        places[i].colonne=i%10+1;
+        if(i%10==0){
+            range++;
+            places[i].range=range;
+        }else{places[i].range=range;}
+        
+        places[i].libre=true;
     }
-    //recherche du dossier à l'aide du numéro de dossier saisi
-    emplacementDossier = rechercheDossier(noDossier);
-    //si le dossier n'existe pas, alors le client est prévenu Sinon, le dossier est supprimé
-    if(emplacementDossier == -1){
-        strcpy(text, "Le dossier saisi n'existe pas.\n");
-        printf("%s\n", text);
-        send(socket, text, strlen(text), 0);
-    } else {
-        supprimerDossier(emplacementDossier);
-        strcpy(text, "Le dossier a été supprimé avec succés.\n");
-        send(socket, text, strlen(text), 0);
-    }
-    //arrêt de la procédure de désinscription
-    printf("Arret de la procédure d'annulation de réservation.\n");
+}
+
+void reservePlace(int nPlace){
+    places[nPlace].libre=false;
 }
 
 //recherche un dossier grace au numéro, retourne l'emplacement dans la table s'il est trouvé, sinon retourne -1
@@ -178,9 +191,11 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
     int emplacement = -1;
     int test;
     for(int i = 0; i < nbDossierTotal; i++){
+        printf("[debug] : 195 -- noDossier = [%s] - liste[i].noDossier = [%s]\n", noDossier, liste[i].noDossier);
         test = strcmp(noDossier, liste[i].noDossier);
         if(test == 0){
             emplacement = i;
+            printf("[debug] : 198");
         }
     }
     return emplacement;
@@ -188,30 +203,48 @@ int rechercheDossier(char noDossier[TAILLE_NO_DOSSIER]){
 
 //supprime le dossier à l'emplacement entré en paramètre
 void supprimerDossier(int emplacement){
+    places[noPlace(liste[emplacement].place.colonne,liste[emplacement].place.range)].libre=true;
     for(int i = emplacement; i < nbDossierTotal-1; i++){
         liste[i] = liste[i+1];
     }
     nbDossierTotal--;
+
+}
+
+int noPlace(int colonne, int range){
+    for(int i=0; i<100;i++){
+        if((places[i].colonne == colonne) && (places[i].range == range)){
+            return i;
+        }
+    }
+}
+
+void ajoutDossier(Dossier d){
+    liste[nbDossierTotal] = d;
+    nbDossierTotal++;
 }
 
 //envoi le nombre de places libres au client
 void procPlacesLibres(int socket){
-    //déclaration des variables
-    
+    send(socket, places, sizeof(places), 0);
 }
 
 //main program
 int main(int argc, char const *argv[])
 {
     //déclaration des variables
+    remplissageTablePlaces();
     int fdSocketAttente;
     int fdSocketCommunication;
     struct sockaddr_in coordServeur;
     struct sockaddr_in coordClient;
     int longueurAdresse;
     int nbRecu;
+    int noDossier; // numero de dossier du client qui veux se desinscrire
+    int nPlace; //numero de la place reserver par le client
+    Dossier d;
+    char nomCl, prenomCl;
     char text[100];
-    char inscription[100] = "1", desinscription[100] = "2";
     int choix[1];
 
     //initialisation de la socket et test si elle est correcte avant de continuer
@@ -259,15 +292,12 @@ int main(int argc, char const *argv[])
                         choix[nbRecu] = 0;
                         if(*choix == '1'){
                             procInscription(fdSocketCommunication);
-                            afficheDossiers();
                         } else if(*choix == '2'){
                             procDesinscription(fdSocketCommunication);
-                            afficheDossiers();
                         } else if(*choix == '3'){
                             procPlacesLibres(fdSocketCommunication);
-                            afficheDossiers();
                         } else {
-                            printf("Erreur");
+                            printf("Erreur d'interprétation de demande\n");
                             exit(EXIT_FAILURE);
                         }
                     }
